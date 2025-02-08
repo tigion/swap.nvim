@@ -1,4 +1,4 @@
-local config = require('opposites.config').config
+local config = require('opposites.config')
 local notify = require('opposites.notify')
 
 ---@class opposites.opposite
@@ -45,7 +45,7 @@ end
 local function find_results(line, col)
   local results = {} ---@type table<opposites.Result>
 
-  for w, ow in pairs(config.opposites) do
+  for w, ow in pairs(config.options.opposites) do
     -- Finds the word in the line.
     local word, opposite_word = w, ow
     local idx = find_word_in_line(line, col, word)
@@ -105,8 +105,8 @@ function M.switch_word_to_opposite_word()
   local row_col_str = '[' .. row .. ':' .. col .. ']'
 
   -- Checks the max allowed line length.
-  if line:len() > config.max_line_length then
-    notify.error('Line too long: ' .. line:len() .. ' (max: ' .. config.max_line_length .. ')')
+  if line:len() > config.options.max_line_length then
+    notify.error('Line too long: ' .. line:len() .. ' (max: ' .. config.options.max_line_length .. ')')
     return
   end
 
@@ -115,7 +115,7 @@ function M.switch_word_to_opposite_word()
 
   -- Checks if we found any results.
   if #results < 1 then
-    if config.notify.not_found then notify.info(row_col_str .. ' No opposite word found') end
+    if config.options.notify.not_found then notify.info(row_col_str .. ' No opposite word found') end
     return
   end
 
@@ -127,7 +127,9 @@ function M.switch_word_to_opposite_word()
   -- the given index has been replaced by the opposite word.
   local new_line = replace_word_in_line(line, result.idx, result.word, result.opposite_word)
   vim.api.nvim_set_current_line(new_line)
-  if config.notify.found then notify.info(row_col_str .. ' ' .. result.word .. ' -> ' .. result.opposite_word) end
+  if config.options.notify.found then
+    notify.info(row_col_str .. ' ' .. result.word .. ' -> ' .. result.opposite_word)
+  end
 end
 
 return M

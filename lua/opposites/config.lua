@@ -11,7 +11,7 @@ local M = {}
 ---@field not_found? boolean Whether to notify when no word is found.
 
 ---@type opposites.Config
-M.config = {
+M.options = {
   max_line_length = 1000,
   opposites = {
     -- stylua: ignore start
@@ -36,7 +36,7 @@ M.config = {
 
 ---@param opts? opposites.Config
 function M.setup(opts)
-  M.config = vim.tbl_deep_extend('force', M.config, opts or {})
+  M.options = vim.tbl_deep_extend('force', M.options, opts or {})
 
   -- TODO: check config values
 end
