@@ -44,6 +44,25 @@ return {
 }
 ```
 
+## Usage
+
+Call `require('opposites').switch()` to switch to the opposite word under the cursor.
+
+To add more words to the opposites list, add them to the `opposites` table in
+the `opposites.Config` table.
+
+```lua
+opts = {
+  opposites = {
+    ['ja'] = 'nein',
+    ['angel'] = 'devil',
+  },
+}
+```
+
+> [!TIP]
+> It doesn't have to be opposites words that are exchanged.
+
 ## Configuration
 
 The default options are:
