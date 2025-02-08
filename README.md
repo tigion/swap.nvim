@@ -46,13 +46,18 @@ return {
 
 ## Usage
 
-Call `require('opposites').switch()` to switch to the opposite word under the cursor.
+Call `require('opposites').switch()` to switch to the opposite word under the
+cursor.
 
 To add more words to the opposites list, add them to the `opposites` table in
 the `opposites.Config` table.
 
+If `use_default_opposites` is set to `false`, only the user defined words will
+be used.
+
 ```lua
 opts = {
+  use_default_opposites = true,
   opposites = {
     ['ja'] = 'nein',
     ['angel'] = 'devil',
@@ -70,6 +75,7 @@ The default options are:
 ```lua
 ---@class opposites.Config
 ---@field max_line_length? integer The maximum line length to search.
+---@field use_default_opposites? boolean Whether to use the default opposites.
 ---@field opposites? table<string, string> The words with their opposite.
 ---@field notify? opposites.Config.notify The notifications to show.
 
@@ -80,6 +86,7 @@ The default options are:
 ---@type opposites.Config
 {
   max_line_length = 1000,
+  use_default_opposites = true,
   opposites = {
     -- stylua: ignore start
     ['enable'] = 'disable',
