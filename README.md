@@ -53,23 +53,25 @@ cursor.
 To add more words to the opposites list, add them to the `opposites` or
 `opposites_by_ft` table in the `opposites.Config` table.
 
+> [!NOTE]
+> Redundant opposite words are removed automatically.
+
 If `use_default_opposites` and `use_default_opposites_by_ft` is set to `false`,
 only the user defined words will be used.
 
 ```lua
 opts = {
-  use_default_opposites = true,
   opposites = {
-    ['ja'] = 'nein',
-    ['angel'] = 'devil',
-    ['=='] = '!=',
+    ['angel'] = 'devil', -- Adds a new default.
+    ['yes'] = 'ja',      -- Replaces the default `['yes'] = 'no'`.
+    ['min'] = nil,       -- Removes a default.
   },
   opposites_by_ft = {
     ['lua'] = {
-      ['=='] = '~=', -- Replaces the default `['=='] = '!='` for lua files.
+      ['=='] = '~=',     -- Replaces the default `['=='] = '!='` for lua files.
     },
     ['sql'] = {
-      ['ASC'] = 'DESC', -- Adds a new opposite word for SQL files.
+      ['ASC'] = 'DESC',  -- Adds a new for SQL files.
     },
   },
 }
@@ -122,6 +124,7 @@ The default options are:
     },
     ['sql'] = {
       ['AND'] = 'OR',
+      ['ASC'] = 'DESC',
     },
   },
   notify = {
