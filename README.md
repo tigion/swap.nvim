@@ -19,6 +19,7 @@ Other similar plugins are:
 - Switches the found word to its opposite word.
 - The found word can also be a part of another word.
   - e.g. _enabled_ with the cursor in `enable` becomes _disabled_.
+- The opposite words can be file type specific.
 - Optionally notifies when the word is found or not.
 - If several results are found, the user is asked which result to switch to.
 
@@ -49,11 +50,11 @@ return {
 Call `require('opposites').switch()` to switch to the opposite word under the
 cursor.
 
-To add more words to the opposites list, add them to the `opposites` or `opposites_by_ft` table in
-the `opposites.Config` table.
+To add more words to the opposites list, add them to the `opposites` or
+`opposites_by_ft` table in the `opposites.Config` table.
 
-If `use_default_opposites` is set to `false`, only the user defined words will
-be used.
+If `use_default_opposites` and `use_default_opposites_by_ft` is set to `false`,
+only the user defined words will be used.
 
 ```lua
 opts = {
@@ -136,6 +137,7 @@ For other plugin manager, call the setup function
 ## TODO
 
 - [ ] Limit and check the user configuration.
-- [ ] Adapt the capitalization of the words to reduce words like `true`, `True` and `TRUE`.
+- [ ] Adapt the capitalization of the words to reduce words like `true`, `True`
+      and `TRUE`.
 - [ ] Use `vim.ui.select` instead of `vim.fn.inputlist`.
 - [x] Add file type specific opposites.
