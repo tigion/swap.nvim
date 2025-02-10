@@ -71,7 +71,7 @@ opts = {
       ['=='] = '~=',     -- Replaces the default `['=='] = '!='` for lua files.
     },
     ['sql'] = {
-      ['ASC'] = 'DESC',  -- Adds a new for SQL files.
+      ['AND'] = 'OR',  -- Adds a new for SQL files.
     },
   },
 }
@@ -123,7 +123,6 @@ The default options are:
       ['=='] = '~=',
     },
     ['sql'] = {
-      ['AND'] = 'OR',
       ['ASC'] = 'DESC',
     },
   },

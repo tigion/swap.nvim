@@ -40,7 +40,6 @@ local defaults = {
       ['=='] = '~=',
     },
     ['sql'] = {
-      ['AND'] = 'OR',
       ['ASC'] = 'DESC',
     },
   },
