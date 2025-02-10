@@ -43,9 +43,10 @@ end
 ---@param col integer The cursors column position.
 ---@return table<opposites.Result> # The found results.
 local function find_results(line, col)
+  local opposites = config.get_opposites()
   local results = {} ---@type table<opposites.Result>
 
-  for w, ow in pairs(config.options.opposites) do
+  for w, ow in pairs(opposites) do
     -- Finds the word in the line.
     local word, opposite_word = w, ow
     local idx = find_word_in_line(line, col, word)

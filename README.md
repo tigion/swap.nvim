@@ -49,7 +49,7 @@ return {
 Call `require('opposites').switch()` to switch to the opposite word under the
 cursor.
 
-To add more words to the opposites list, add them to the `opposites` table in
+To add more words to the opposites list, add them to the `opposites` or `opposites_by_ft` table in
 the `opposites.Config` table.
 
 If `use_default_opposites` is set to `false`, only the user defined words will
@@ -61,6 +61,15 @@ opts = {
   opposites = {
     ['ja'] = 'nein',
     ['angel'] = 'devil',
+    ['=='] = '!=',
+  },
+  opposites_by_ft = {
+    ['lua'] = {
+      ['=='] = '~=', -- Replaces the default `['=='] = '!='` for lua files.
+    },
+    ['sql'] = {
+      ['ASC'] = 'DESC', -- Adds a new opposite word for SQL files.
+    },
   },
 }
 ```
@@ -73,11 +82,16 @@ opts = {
 The default options are:
 
 ```lua
----@class opposites.Config
+---@class opposites.Config -- opposites.config.config
 ---@field max_line_length? integer The maximum line length to search.
 ---@field use_default_opposites? boolean Whether to use the default opposites.
----@field opposites? table<string, string> The words with their opposite.
+---@field use_default_opposites_by_ft? boolean Whether to use the default opposites.
+---@field opposites? opposites.Config.opposites The words with their opposite.
+---@field opposites_by_ft? opposites.Config.opposites_by_ft The file type specific words with their opposite.
 ---@field notify? opposites.Config.notify The notifications to show.
+
+---@alias opposites.Config.opposites table<string, string>
+---@alias opposites.Config.opposites_by_ft table<string, opposites.Config.opposites>
 
 ---@class opposites.Config.notify
 ---@field found? boolean Whether to notify when a word is found.
@@ -87,20 +101,27 @@ The default options are:
 {
   max_line_length = 1000,
   use_default_opposites = true,
+  use_default_opposites_by_ft = true,
   opposites = {
-    -- stylua: ignore start
     ['enable'] = 'disable',
-      ['true'] = 'false',
-      ['True'] = 'False',
-       ['yes'] = 'no',
-        ['on'] = 'off',
-      ['left'] = 'right',
-        ['up'] = 'down',
-       ['min'] = 'max',
-        ['=='] = '!=',
-        ['<='] = '>=',
-         ['<'] = '>',
-    -- stylua: ignore end
+    ['true'] = 'false',
+    ['True'] = 'False',
+    ['yes'] = 'no',
+    ['on'] = 'off',
+    ['left'] = 'right',
+    ['up'] = 'down',
+    ['min'] = 'max',
+    ['=='] = '!=',
+    ['<='] = '>=',
+    ['<'] = '>',
+  },
+  opposites_by_ft = {
+    ['lua'] = {
+      ['=='] = '~=',
+    },
+    ['sql'] = {
+      ['AND'] = 'OR',
+    },
   },
   notify = {
     found = false,
@@ -115,4 +136,6 @@ For other plugin manager, call the setup function
 ## TODO
 
 - [ ] Limit and check the user configuration.
+- [ ] Adapt the capitalization of the words to reduce words like `true`, `True` and `TRUE`.
 - [ ] Use `vim.ui.select` instead of `vim.fn.inputlist`.
+- [x] Add file type specific opposites.
