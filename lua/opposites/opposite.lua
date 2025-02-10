@@ -1,5 +1,6 @@
 local config = require('opposites.config')
 local notify = require('opposites.notify')
+local util = require('opposites.util')
 
 ---@class opposites.opposite
 local M = {}
@@ -8,6 +9,7 @@ local M = {}
 ---@field word string The found word.
 ---@field opposite_word string The opposite word.
 ---@field idx integer The index of the beginning of the word in the line near the cursor.
+---@field use_mask boolean Whether to use a case sensitive mask.
 
 ---Returns the index of the beginning of the word
 ---in the line near the cursor.
@@ -48,13 +50,32 @@ local function find_results(line, col)
 
   for w, ow in pairs(opposites) do
     -- Finds the word in the line.
-    local word, opposite_word = w, ow
-    local idx = find_word_in_line(line, col, word)
-    if idx ~= -1 then table.insert(results, { word = word, opposite_word = opposite_word, idx = idx }) end
+    local line2, word, opposite_word, use_mask = line, w, ow, false
+    if
+      config.options.use_case_sensitive_mask
+      and not (util.has_uppercase(word) or util.has_uppercase(opposite_word))
+    then
+      line2 = line2:lower()
+      use_mask = true
+    end
+    local idx = find_word_in_line(line2, col, word)
+    if idx ~= -1 then
+      table.insert(results, { word = word, opposite_word = opposite_word, idx = idx, use_mask = use_mask })
+    end
+
     -- Finds the opposite word in the line.
-    word, opposite_word = ow, w
-    idx = find_word_in_line(line, col, word)
-    if idx ~= -1 then table.insert(results, { word = word, opposite_word = opposite_word, idx = idx }) end
+    line2, word, opposite_word, use_mask = line, ow, w, false
+    if
+      config.options.use_case_sensitive_mask
+      and not (util.has_uppercase(word) or util.has_uppercase(opposite_word))
+    then
+      line2 = line2:lower()
+      use_mask = true
+    end
+    idx = find_word_in_line(line2, col, word)
+    if idx ~= -1 then
+      table.insert(results, { word = word, opposite_word = opposite_word, idx = idx, use_mask = use_mask })
+    end
   end
 
   -- Sorts the results by length and then alphabetically.
@@ -87,13 +108,22 @@ end
 
 ---Returns the line with the replaced word at the index in the line.
 ---@param line string
----@param idx integer
----@param old_word string
----@param new_word string
+---@param result opposites.Result
 ---@return string
-local function replace_word_in_line(line, idx, old_word, new_word)
+local function replace_word_in_line(line, result)
+  local idx = result.idx
+  local old_word = result.word
+  local new_word = result.opposite_word
+  local use_mask = result.use_mask
+
   local left_part = string.sub(line, 1, idx - 1)
+  if use_mask then
+    local middle_part = string.sub(line, idx, idx + #old_word - 1)
+    local mask = util.get_case_sensitive_mask(middle_part)
+    new_word = util.apply_case_sensitive_mask(new_word, mask)
+  end
   local right_part = string.sub(line, idx + #old_word)
+
   return left_part .. new_word .. right_part
 end
 
@@ -126,7 +156,7 @@ function M.switch_word_to_opposite_word()
 
   -- Replaces the current line with a new line in which the word at
   -- the given index has been replaced by the opposite word.
-  local new_line = replace_word_in_line(line, result.idx, result.word, result.opposite_word)
+  local new_line = replace_word_in_line(line, result)
   vim.api.nvim_set_current_line(new_line)
   if config.options.notify.found then
     notify.info(row_col_str .. ' ' .. result.word .. ' -> ' .. result.opposite_word)

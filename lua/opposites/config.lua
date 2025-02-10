@@ -3,6 +3,7 @@ local M = {}
 
 ---@class opposites.Config -- opposites.config.config
 ---@field max_line_length? integer The maximum line length to search.
+---@field use_case_sensitive_mask? boolean Whether to use a case sensitive mask.
 ---@field use_default_opposites? boolean Whether to use the default opposites.
 ---@field use_default_opposites_by_ft? boolean Whether to use the default opposites.
 ---@field opposites? opposites.Config.opposites The words with their opposite.
@@ -19,12 +20,12 @@ local M = {}
 ---@type opposites.Config
 local defaults = {
   max_line_length = 1000,
+  use_case_sensitive_mask = true,
   use_default_opposites = true,
   use_default_opposites_by_ft = true,
   opposites = {
     ['enable'] = 'disable',
     ['true'] = 'false',
-    ['True'] = 'False',
     ['yes'] = 'no',
     ['on'] = 'off',
     ['and'] = 'or',
@@ -40,7 +41,7 @@ local defaults = {
       ['=='] = '~=',
     },
     ['sql'] = {
-      ['ASC'] = 'DESC',
+      ['asc'] = 'desc',
     },
   },
   notify = {
