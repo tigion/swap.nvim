@@ -14,9 +14,9 @@ end
 
 ---Returns the case sensitive mask for the given word.
 ---
----If the word is uppercase, the mask is true.
----If the word is lowercase, the mask is false.
----If the word is mixed case, the mask is a string to represent the case.
+---- If the word is uppercase, the mask is true.
+---- If the word is lowercase, the mask is false.
+---- If the word is mixed case, the mask is a string to represent the case.
 ---
 ---@param word string The word to get the mask for.
 ---@return string|boolean # The case sensitive mask.

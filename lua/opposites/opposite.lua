@@ -40,7 +40,6 @@ end
 
 ---Returns the results for the words found or their opposite
 ---in the given line near the given column.
----
 ---@param line string The line string to search in.
 ---@param col integer The cursors column position.
 ---@return table<opposites.Result> # The found results.
@@ -48,33 +47,24 @@ local function find_results(line, col)
   local opposites = config.get_opposites()
   local results = {} ---@type table<opposites.Result>
 
+  -- Finds the word or the opposite word in the line.
   for w, ow in pairs(opposites) do
-    -- Finds the word in the line.
-    local line2, word, opposite_word, use_mask = line, w, ow, false
-    if
-      config.options.use_case_sensitive_mask
-      and not (util.has_uppercase(word) or util.has_uppercase(opposite_word))
-    then
-      line2 = line2:lower()
-      use_mask = true
-    end
-    local idx = find_word_in_line(line2, col, word)
-    if idx ~= -1 then
-      table.insert(results, { word = word, opposite_word = opposite_word, idx = idx, use_mask = use_mask })
-    end
-
-    -- Finds the opposite word in the line.
-    line2, word, opposite_word, use_mask = line, ow, w, false
-    if
-      config.options.use_case_sensitive_mask
-      and not (util.has_uppercase(word) or util.has_uppercase(opposite_word))
-    then
-      line2 = line2:lower()
-      use_mask = true
-    end
-    idx = find_word_in_line(line2, col, word)
-    if idx ~= -1 then
-      table.insert(results, { word = word, opposite_word = opposite_word, idx = idx, use_mask = use_mask })
+    for _, v in ipairs({ { w, ow }, { ow, w } }) do
+      local word, opposite_word = v[1], v[2]
+      local use_mask = false
+      -- Uses a case sensitive mask if the option is activated and
+      -- the word or the opposite word contains no uppercase letters.
+      if
+        config.options.use_case_sensitive_mask
+        and not (util.has_uppercase(word) or util.has_uppercase(opposite_word))
+      then
+        use_mask = true
+      end
+      -- Finds the word in the line.
+      local idx = find_word_in_line(use_mask and line:lower() or line, col, word)
+      if idx ~= -1 then
+        table.insert(results, { word = word, opposite_word = opposite_word, idx = idx, use_mask = use_mask })
+      end
     end
   end
 
@@ -88,7 +78,6 @@ local function find_results(line, col)
 end
 
 ---Returns the selected result or nil if no result was selected.
----
 ---@param results table<opposites.Result> The results to select from.
 ---@return opposites.Result|nil # The selected result or nil if no result was selected.
 local function select_result(results)

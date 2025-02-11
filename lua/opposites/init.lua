@@ -5,6 +5,11 @@ local opposite = require('opposites.opposite')
 ---@class opposites
 local M = {}
 
+-- Exports the module.
+-- So `Opposites.switch()` can be used instead of `require('opposites').switch()`.
+-- This only works after the plugin is loaded/required.
+-- _G.Opposites = M
+
 ---@param opts? opposites.Config
 function M.setup(opts)
   -- Checks the supported neovim version.

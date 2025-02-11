@@ -54,7 +54,6 @@ local defaults = {
 M.options = defaults -- vim.deepcopy(defaults)
 
 ---Cleans up redundant opposite words.
----
 ---@param opposites opposites.Config.opposites
 ---@return opposites.Config.opposites
 local function cleanup_redundant_opposites(opposites)
@@ -69,7 +68,6 @@ local function cleanup_redundant_opposites(opposites)
 end
 
 ---Cleans up redundant opposite words by ft.
----
 ---@param opposites_by_ft opposites.Config.opposites_by_ft
 ---@return opposites.Config.opposites_by_ft
 local function cleanup_redundant_opposites_by_ft(opposites_by_ft)
@@ -80,7 +78,6 @@ local function cleanup_redundant_opposites_by_ft(opposites_by_ft)
 end
 
 ---Setups the plugin.
----
 ---@param opts? opposites.Config
 function M.setup(opts)
   opts = opts or {}
@@ -101,7 +98,6 @@ end
 
 ---Returns the merged opposites words from the default and
 ---current file type specific ones.
----
 ---@return opposites.Config.opposites
 function M.get_opposites()
   local opposites = M.options.opposites or {}
