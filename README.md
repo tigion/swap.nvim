@@ -171,9 +171,9 @@ For other plugin manager, call the setup function
 
 ## TODO
 
-- [ ] Refactoring of the first quickly written code.
 - [ ] Limit and check the user configuration.
-- [ ] Use `vim.ui.select` instead of `vim.fn.inputlist`.
+- [x] Use `vim.ui.select` instead of `vim.fn.inputlist`.
+- [x] Refactoring of the first quickly written code.
 - [x] Adapt the capitalization of the words to reduce words like `true`,
       `True`, `tRUe` and `TRUE`.
 - [x] Add file type specific opposites.
