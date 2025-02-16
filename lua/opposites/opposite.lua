@@ -79,7 +79,10 @@ local function find_results(line, cursor)
 
   -- Sorts the results by length and then alphabetically.
   table.sort(results, function(a, b)
-    if #a.word == #b.word then return a.word < b.word end
+    if #a.word == #b.word then
+      if a.word == b.word then return a.opposite_word < b.opposite_word end
+      return a.word < b.word
+    end
     return #a.word < #b.word
   end)
 
