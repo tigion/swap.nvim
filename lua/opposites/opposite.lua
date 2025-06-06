@@ -36,7 +36,7 @@ local M = {}
 ---@return integer # The index of the beginning of the word or `-1` if not found.
 local function find_word_in_line(line, col, word)
   local min_idx = (col + 1) - (#word - 1)
-  local idx = string.find(line, word, min_idx)
+  local idx = string.find(line, word, min_idx, true)
   return idx ~= nil and idx <= (col + 1) and idx or -1
 end
 
