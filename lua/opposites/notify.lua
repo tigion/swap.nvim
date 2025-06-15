@@ -1,4 +1,4 @@
----@class opposites.notify
+---@class opposites.Notify
 local M = {}
 
 ---Displays a notification to the user.

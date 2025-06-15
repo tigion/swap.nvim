@@ -1,47 +1,75 @@
 ---@class opposites.config
 local M = {}
 
----@class opposites.Config -- opposites.config.config
----@field max_line_length? integer The maximum line length to search.
+---@alias opposites.ConfigOppositesWords table<string, string>
+---@alias opposites.ConfigOppositesWordsByFt table<string, opposites.ConfigOpposites>
+
+---@class opposites.ConfigOpposites
 ---@field use_case_sensitive_mask? boolean Whether to use a case sensitive mask.
----@field use_default_opposites? boolean Whether to use the default opposites.
----@field use_default_opposites_by_ft? boolean Whether to use the default opposites.
----@field opposites? opposites.Config.opposites The words with their opposite.
----@field opposites_by_ft? opposites.Config.opposites_by_ft The file type specific words with their opposite.
----@field notify? opposites.Config.notify The notifications to show.
+---@field use_default_words? boolean Whether to use the default opposites.
+---@field use_default_words_by_ft? boolean Whether to use the default opposites.
+---@field words? opposites.ConfigOppositesWords The words with their opposite words.
+---@field words_by_ft? opposites.ConfigOppositesWordsByFt The file type specific words with their opposite words.
 
----@alias opposites.Config.opposites table<string, string>
----@alias opposites.Config.opposites_by_ft table<string, opposites.Config.opposites>
+---@alias opposites.ConfigCasesId
+--- | 'snake' snake_case
+--- | 'screaming_snake' SCREAMING_SNAKE_CASE
+--- | 'kebab' kebab-case
+--- | 'screaming_kebab' SCREAMING-KEBAB-CASE
+--- | 'camel' camelCase
+--- | 'pascal' PascalCase
+---@alias opposites.ConfigCasesTypes table<opposites.ConfigCasesId>
 
----@class opposites.Config.notify
+---@class opposites.ConfigCases
+---@field types? opposites.ConfigCasesTypes The allowed case types to parse.
+
+---@class opposites.ConfigNotify
 ---@field found? boolean Whether to notify when a word is found.
 ---@field not_found? boolean Whether to notify when no word is found.
+
+---@class opposites.Config -- opposites.config.config
+---@field max_line_length? integer The maximum line length to search.
+---@field opposites? opposites.ConfigOpposites The options for the opposites.
+---@field cases? opposites.ConfigCases The options for the cases.
+---@field notify? opposites.ConfigNotify The notifications to show.
 
 ---@type opposites.Config
 local defaults = {
   max_line_length = 1000,
-  use_case_sensitive_mask = true,
-  use_default_opposites = true,
-  use_default_opposites_by_ft = true,
   opposites = {
-    ['enable'] = 'disable',
-    ['true'] = 'false',
-    ['yes'] = 'no',
-    ['on'] = 'off',
-    ['and'] = 'or',
-    ['left'] = 'right',
-    ['up'] = 'down',
-    ['min'] = 'max',
-    ['=='] = '!=',
-    ['<='] = '>=',
-    ['<'] = '>',
-  },
-  opposites_by_ft = {
-    ['lua'] = {
-      ['=='] = '~=',
+    use_case_sensitive_mask = true,
+    use_default_words = true,
+    use_default_words_by_ft = true,
+    words = {
+      ['enable'] = 'disable',
+      ['true'] = 'false',
+      ['yes'] = 'no',
+      ['on'] = 'off',
+      ['and'] = 'or',
+      ['left'] = 'right',
+      ['up'] = 'down',
+      ['min'] = 'max',
+      ['=='] = '!=',
+      ['<='] = '>=',
+      ['<'] = '>',
     },
-    ['sql'] = {
-      ['asc'] = 'desc',
+    words_by_ft = {
+      ['lua'] = {
+        ['=='] = '~=',
+      },
+      ['sql'] = {
+        ['asc'] = 'desc',
+      },
+    },
+  },
+  cases = {
+    types = {
+      'snake',
+      'screaming_snake',
+      'kebab',
+      'screaming_kebab',
+      'camel',
+      'pascal',
     },
   },
   notify = {
@@ -54,9 +82,9 @@ local defaults = {
 M.options = defaults -- vim.deepcopy(defaults)
 
 ---Cleans up redundant opposite words.
----@param opposites opposites.Config.opposites
----@return opposites.Config.opposites
-local function cleanup_redundant_opposites(opposites)
+---@param opposites opposites.ConfigOpposites
+---@return opposites.ConfigOpposites
+local function cleanup_opposite_words(opposites)
   for w, ow in pairs(opposites) do
     if w == opposites[w] then
       opposites[w] = nil
@@ -68,11 +96,11 @@ local function cleanup_redundant_opposites(opposites)
 end
 
 ---Cleans up redundant opposite words by ft.
----@param opposites_by_ft opposites.Config.opposites_by_ft
----@return opposites.Config.opposites_by_ft
-local function cleanup_redundant_opposites_by_ft(opposites_by_ft)
+---@param opposites_by_ft opposites.ConfigOppositesWordsByFt
+---@return opposites.ConfigOppositesWordsByFt
+local function cleanup_opposite_words_by_ft(opposites_by_ft)
   for _, opposites in pairs(opposites_by_ft) do
-    opposites = cleanup_redundant_opposites(opposites)
+    opposites = cleanup_opposite_words(opposites)
   end
   return opposites_by_ft
 end
@@ -83,33 +111,33 @@ function M.setup(opts)
   opts = opts or {}
 
   -- Clears the default opposites if the user doesn't want to use them.
-  if opts.use_default_opposites == false then M.options.opposites = {} end
-  if opts.use_default_opposites_by_ft == false then M.options.opposites_by_ft = {} end
+  if opts.opposites.use_default_words == false then M.options.opposites.words = {} end
+  if opts.opposites.use_default_words_by_ft == false then M.options.opposites.words_by_ft = {} end
 
   -- Merges the user config with the default config.
   M.options = vim.tbl_deep_extend('force', defaults, opts or {})
 
   -- Cleans up redundant opposite words.
-  M.options.opposites = cleanup_redundant_opposites(M.options.opposites)
-  M.options.opposites_by_ft = cleanup_redundant_opposites_by_ft(M.options.opposites_by_ft)
+  M.options.opposites.words = cleanup_opposite_words(M.options.opposites.words)
+  M.options.opposites.words_by_ft = cleanup_opposite_words_by_ft(M.options.opposites.words_by_ft)
 
   -- TODO: check all config values
 end
 
 ---Returns the merged opposites words from the default and
----current file type specific ones.
----@return opposites.Config.opposites
-function M.get_opposites()
-  local opposites = M.options.opposites or {}
-  local opposites_by_ft = M.options.opposites_by_ft or {}
+---the current file type specific ones.
+---@return opposites.ConfigOppositesWords
+function M.merge_opposite_words()
+  local words = M.options.opposites.words or {}
+  local words_by_ft = M.options.opposites.words_by_ft or {}
   local filetype = vim.bo.filetype
-  if opposites_by_ft[filetype] then
+  if words_by_ft[filetype] then
     -- Adds or replaces file type-dependent opposites.
-    opposites = vim.tbl_deep_extend('force', opposites, opposites_by_ft[filetype])
+    words = vim.tbl_deep_extend('force', words, words_by_ft[filetype])
     -- Cleans up redundant opposite words.
-    opposites = cleanup_redundant_opposites(opposites)
+    words = cleanup_opposite_words(words)
   end
-  return opposites
+  return words
 end
 
 return M

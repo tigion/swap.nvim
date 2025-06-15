@@ -1,11 +1,12 @@
 local config = require('opposites.config')
 local notify = require('opposites.notify')
-local util = require('opposites.util')
 
----@class opposites.opposite
+local util = require('opposites.opposites.util')
+
+---@class opposites.opposites
 local M = {}
 
----@class opposites.Result
+---@class opposites.OppositesResult
 ---@field word string The found word.
 ---@field opposite_word string The opposite word.
 ---@field idx integer The index of the beginning of the word in the line near the cursor.
@@ -44,20 +45,20 @@ end
 ---in the given line near the given column.
 ---@param line string The line string to search in.
 ---@param cursor { row: integer, col: integer } The cursors position.
----@return table<opposites.Result> # The found results.
+---@return table<opposites.OppositesResult> # The found results.
 local function find_results(line, cursor)
-  local opposites = config.get_opposites()
-  local results = {} ---@type table<opposites.Result>
+  local words = config.merge_opposite_words()
+  local results = {} ---@type table<opposites.OppositesResult>
 
   -- Finds the word or the opposite word in the line.
-  for w, ow in pairs(opposites) do
+  for w, ow in pairs(words) do
     for _, v in ipairs({ { w, ow }, { ow, w } }) do
       local word, opposite_word = v[1], v[2]
       local use_mask = false
       -- Uses a case sensitive mask if the option is activated and
       -- the word or the opposite word contains no uppercase letters.
       if
-        config.options.use_case_sensitive_mask
+        config.options.opposites.use_case_sensitive_mask
         and not (util.has_uppercase(word) or util.has_uppercase(opposite_word))
       then
         use_mask = true
@@ -91,7 +92,7 @@ end
 
 ---Returns the line with the replaced word at the index in the line.
 ---@param line string
----@param result opposites.Result
+---@param result opposites.OppositesResult
 ---@return string
 local function replace_word_in_line(line, result)
   local idx = result.idx
@@ -112,7 +113,7 @@ end
 
 ---Replaces the result in the current line.
 ---This function is used as a callback function for `vim.ui.select`.
----@param result opposites.Result
+---@param result opposites.OppositesResult
 function M.replace_result_in_current_line(result)
   local line = vim.api.nvim_get_current_line()
   local row, col = unpack(vim.api.nvim_win_get_cursor(0))

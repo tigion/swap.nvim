@@ -1,4 +1,4 @@
----@class opposites.util
+---@class opposites.opposites.util
 local M = {}
 
 ---Returns true if the given word has uppercase characters.
