@@ -82,27 +82,27 @@ local defaults = {
 M.options = defaults -- vim.deepcopy(defaults)
 
 ---Cleans up redundant opposite words.
----@param opposites opposites.ConfigOppositesWords
+---@param words opposites.ConfigOppositesWords
 ---@return opposites.ConfigOppositesWords
-local function cleanup_opposite_words(opposites)
-  for w, ow in pairs(opposites) do
-    if w == opposites[w] then
-      opposites[w] = nil
-    elseif opposites[ow] and opposites[ow] == w then
-      opposites[ow] = nil
+local function cleanup_opposite_words(words)
+  for w, ow in pairs(words) do
+    if w == words[w] then
+      words[w] = nil
+    elseif words[ow] and words[ow] == w then
+      words[ow] = nil
     end
   end
-  return opposites
+  return words
 end
 
 ---Cleans up redundant opposite words by ft.
----@param opposites_by_ft opposites.ConfigOppositesWordsByFt
+---@param words opposites.ConfigOppositesWordsByFt
 ---@return opposites.ConfigOppositesWordsByFt
-local function cleanup_opposite_words_by_ft(opposites_by_ft)
-  for _, opposites in pairs(opposites_by_ft) do
+local function cleanup_opposite_words_by_ft(words)
+  for _, opposites in pairs(words) do
     opposites = cleanup_opposite_words(opposites)
   end
-  return opposites_by_ft
+  return words
 end
 
 ---Setups the plugin.
