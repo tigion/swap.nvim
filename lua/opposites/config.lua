@@ -2,7 +2,7 @@
 local M = {}
 
 ---@alias opposites.ConfigOppositesWords table<string, string>
----@alias opposites.ConfigOppositesWordsByFt table<string, opposites.ConfigOpposites>
+---@alias opposites.ConfigOppositesWordsByFt table<string, opposites.ConfigOppositesWords>
 
 ---@class opposites.ConfigOpposites
 ---@field use_case_sensitive_mask? boolean Whether to use a case sensitive mask.
@@ -82,8 +82,8 @@ local defaults = {
 M.options = defaults -- vim.deepcopy(defaults)
 
 ---Cleans up redundant opposite words.
----@param opposites opposites.ConfigOpposites
----@return opposites.ConfigOpposites
+---@param opposites opposites.ConfigOppositesWords
+---@return opposites.ConfigOppositesWords
 local function cleanup_opposite_words(opposites)
   for w, ow in pairs(opposites) do
     if w == opposites[w] then
