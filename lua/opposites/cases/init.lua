@@ -196,9 +196,11 @@ function M.switch_word_to_next_case_type()
 
   -- Finds the word in the current line.
   local word, word_start, word_end = find_word_in_line(line, cursor.col)
-  if word == nil and config.options.notify.not_found then
-    local row_col_str = '[' .. cursor.row .. ':' .. cursor.col + 1 .. ']'
-    notify.info(row_col_str .. ' No word found')
+  if word == nil then
+    if config.options.notify.not_found then
+      local row_col_str = '[' .. cursor.row .. ':' .. cursor.col + 1 .. ']'
+      notify.info(row_col_str .. ' No word found')
+    end
     return
   end
 
@@ -207,9 +209,11 @@ function M.switch_word_to_next_case_type()
 
   -- Gets the next case type and checks if the word is supported.
   local new_word = switch_to_next_case_type(word)
-  if new_word == false and config.options.notify.not_found then
-    local row_col_str = '[' .. cursor.row .. ':' .. cursor.col + 1 .. ']'
-    notify.info(row_col_str .. ' Word `' .. word .. '` is an unsupported case type')
+  if new_word == false then
+    if config.options.notify.not_found then
+      local row_col_str = '[' .. cursor.row .. ':' .. cursor.col + 1 .. ']'
+      notify.info(row_col_str .. ' Word `' .. word .. '` is an unsupported case type')
+    end
     return
   end
 
