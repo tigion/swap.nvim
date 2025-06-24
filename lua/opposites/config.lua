@@ -5,6 +5,7 @@ local M = {}
 ---@alias opposites.ConfigOppositesWordsByFt table<string, opposites.ConfigOppositesWords>
 
 ---@class opposites.ConfigOpposites
+---@field enabled? boolean Whether to enable the opposites module.
 ---@field use_case_sensitive_mask? boolean Whether to use a case sensitive mask.
 ---@field use_default_words? boolean Whether to use the default opposites.
 ---@field use_default_words_by_ft? boolean Whether to use the default opposites.
@@ -21,6 +22,7 @@ local M = {}
 ---@alias opposites.ConfigCasesTypes table<opposites.ConfigCasesId>
 
 ---@class opposites.ConfigCases
+---@field enabled? boolean Whether to enable the cases module.
 ---@field types? opposites.ConfigCasesTypes The allowed case types to parse.
 
 ---@class opposites.ConfigNotify
@@ -37,6 +39,7 @@ local M = {}
 local defaults = {
   max_line_length = 1000,
   opposites = {
+    enabled = true,
     use_case_sensitive_mask = true,
     use_default_words = true,
     use_default_words_by_ft = true,
@@ -63,6 +66,7 @@ local defaults = {
     },
   },
   cases = {
+    enabled = true,
     types = {
       'snake',
       'screaming_snake',

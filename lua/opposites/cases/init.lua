@@ -1,7 +1,6 @@
 local config = require('opposites.config')
 local notify = require('opposites.notify')
-
-local util = require('opposites.cases.util')
+local util = require('opposites.util')
 
 ---@class opposites.cases
 M = {}
@@ -66,6 +65,46 @@ local cases = {
   },
 }
 
+---Finds the word with start and end position
+---in the line under the cursor.
+--
+-- INFO: Supports currently only words with alphanumeric characters,
+--       underscores and dashes.
+--
+--         |
+--     foo_bar          <- cursor in word
+--         |
+-- 45678901234567890123 <- index in line
+-- 34567890123456789012 <- column
+--     ^ ^ |   ^
+--         ^            <- cursor position
+--
+--        word len:  7
+--      word start:  8
+--        word end: 14
+--             col: 11 (12)
+--
+---@param line string The line string to search in.
+---@param col integer The cursors column position.
+---@return integer|nil # The start index of the word or nil.
+---@return string|nil # The word or nil if not found.
+local function find_word_in_line(line, col)
+  local pattern = '[a-zA-Z0-9_-]+'
+  local start_idx, end_idx
+
+  -- Finds the pattern matching word in the line.
+  while true do
+    start_idx, end_idx = string.find(line, pattern, (end_idx or 0) + 1)
+    if start_idx == nil then break end
+    if start_idx <= col + 1 and end_idx >= col + 1 then
+      local word = line:sub(start_idx, end_idx)
+      return start_idx, word
+    end
+  end
+
+  return nil
+end
+
 ---Gets the allowed case types filtered by the user config.
 ---@return opposites.ConfigCases
 local function get_allowed_case_types()
@@ -87,11 +126,8 @@ end
 ---@return opposites.CasesResult|boolean # The parsed result or false.
 local function parse_allowed_case_types(word)
   for _, case_type in pairs(get_allowed_case_types()) do
-    local parser = case_type.parser
-    if type(parser) == 'function' then
-      local result = parser(word)
-      if result then return result end
-    end
+    local result = case_type.parser(word)
+    if result then return result end
   end
 
   return false
@@ -103,7 +139,7 @@ end
 local function get_next_case_type_id(case_type_id)
   -- Gets the allowed case types and exits with nil if there are none.
   local allowed_case_types = get_allowed_case_types()
-  if util.table_length(allowed_case_types) == 0 then return nil end
+  if util.table.length(allowed_case_types) == 0 then return nil end
 
   -- Gets the next case type id.
   local new_case_type_id = next(allowed_case_types, case_type_id)
@@ -140,102 +176,64 @@ local function switch_to_next_case_type(word)
   return false
 end
 
----Finds the word with start and end position
----in the line under the cursor.
---
--- INFO: Supports currently only words with alphanumeric characters,
---       underscores and dashes.
---
---         |
---     foo_bar          <- cursor in word
---         |
--- 45678901234567890123 <- index in line
--- 34567890123456789012 <- column
---     ^ ^ |   ^
---         ^            <- cursor position
---
---        word len:  7
---      word start:  8
---        word end: 14
---             col: 11 (12)
---
+---Returns the results for the found word and its next case type.
 ---@param line string The line string to search in.
----@param col integer The cursors column position.
----@return string|nil # The word or nil if not found.
----@return integer|nil # The start index of the word or nil.
----@return integer|nil # The end index of the word or nil.
-local function find_word_in_line(line, col)
-  local pattern = '[a-zA-Z0-9_-]+'
-  local word_start, word_end
-
-  -- Finds the pattern matching word in the line under the cursor.
-  while true do
-    word_start, word_end = string.find(line, pattern, (word_end or 0) + 1)
-    if word_start == nil then break end
-    if word_start <= col + 1 and word_end >= col + 1 then
-      local word = line:sub(word_start, word_end)
-      return word, word_start, word_end
-    end
-  end
-
-  return nil
-end
-
----Switches the word under the cursor to its next case type.
-function M.switch_word_to_next_case_type()
-  -- Gets the current line string and the current cursor position.
-  local line = vim.api.nvim_get_current_line()
-  local row, col = unpack(vim.api.nvim_win_get_cursor(0))
-  local cursor = { row = row, col = col }
-
-  -- Checks the max allowed line length.
-  if line:len() > config.options.max_line_length then
-    notify.error('Line too long: ' .. line:len() .. ' (max: ' .. config.options.max_line_length .. ')')
-    return
-  end
+---@param cursor opposites.Cursor The cursors position.
+---@param quiet? boolean Whether to quiet the notifications.
+---@return table<opposites.Result> # The found results.
+local function find_results(line, cursor, quiet)
+  local results = {}
 
   -- Finds the word in the current line.
-  local word, word_start, word_end = find_word_in_line(line, cursor.col)
-  if word == nil then
-    if config.options.notify.not_found then
-      local row_col_str = '[' .. cursor.row .. ':' .. cursor.col + 1 .. ']'
-      notify.info(row_col_str .. ' No word found')
-    end
-    return
+  local start_idx, word = find_word_in_line(line, cursor.col)
+  if word == nil or word == '' then
+    if not quiet and config.options.notify.not_found then notify.info('No word found', cursor) end
+    return {}
   end
-
-  -- Checks if the word is nil or empty.
-  if word == nil or word == '' then return end
 
   -- Gets the next case type and checks if the word is supported.
   local new_word = switch_to_next_case_type(word)
   if new_word == false then
-    if config.options.notify.not_found then
-      local row_col_str = '[' .. cursor.row .. ':' .. cursor.col + 1 .. ']'
-      notify.info(row_col_str .. ' Word `' .. word .. '` is an unsupported case type')
+    if not quiet and config.options.notify.not_found then
+      notify.info('`' .. word .. '` has an unsupported case type', cursor)
     end
-    return
+    return {}
   end
 
-  -- Replaces the found word in the current line.
-  local left_part = string.sub(line, 1, word_start - 1)
-  local right_part = string.sub(line, word_end + 1)
-  local new_line = left_part .. new_word .. right_part
-  vim.api.nvim_set_current_line(new_line)
+  -- Adds the result to the results list.
+  table.insert(results, {
+    str = word,
+    new_str = new_word,
+    start_idx = start_idx,
+    cursor = cursor,
+    module = 'cases',
+  })
 
-  -- Corrects the cursor position if the opposite word is shorter than the word.
-  local max_col = word_start - 1 + #new_word - 1
-  local new_col = cursor.col
-  if new_col > max_col then new_col = max_col end
+  return results
+end
 
-  -- Checks if the cursor position has changed.
-  if new_col ~= cursor.col then vim.api.nvim_win_set_cursor(0, { cursor.row, new_col }) end
+---Returns the found results.
+---@param line string The line string to search in.
+---@param cursor opposites.Cursor The cursors position.
+---@param quiet? boolean Whether to quiet the notifications.
+---@return table<opposites.Result> # The found results.
+function M.get_results(line, cursor, quiet)
+  quiet = quiet or false
 
-  -- Shows a success notification if the option is activated.
-  if config.options.notify.found then
-    local row_col_str = '[' .. cursor.row .. ':' .. cursor.col + 1 .. ']'
-    notify.info(row_col_str .. ' ' .. word .. ' -> ' .. new_word)
+  -- Gets the found results.
+  local results = find_results(line, cursor, quiet)
+
+  -- Checks if we found any results.
+  if #results > 0 and not quiet and config.options.notify.found then
+    -- Results found.
+    local new_strs = {}
+    for _, result in ipairs(results) do
+      table.insert(new_strs, result.new_str)
+    end
+    notify.info(results[1].str .. ' -> ' .. table.concat(new_strs, ', '), cursor)
   end
+
+  return results
 end
 
 return M

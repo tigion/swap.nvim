@@ -1,6 +1,7 @@
 # nvim-opposites
 
-A Neovim plugin to quickly switch the word under the cursor to its opposite word.
+A Neovim plugin to quickly switch the word under the cursor to its opposite
+word or other supported variants.
 
 For example, if the cursor is on `enable` and you press `<Leader>i` it will
 switch to `disable` and vice versa.
@@ -8,37 +9,36 @@ switch to `disable` and vice versa.
 > [!WARNING]
 > This plugin is based on my personal needs. Work in progress. 🚀
 
-> [!CAUTION]
-> BREAKING CHANGES (2025-06-19): The configuration has changed.
->
-> - Options for the opposites are now in the `opposites` table.
-> - The `opposites` and `opposites_by_ft` tables are now renamed to `words` and
->   `words_by_ft`.
->
-> See the [Configuration](#configuration) section.
-
 Other similar or better plugins are:
 
 - [nguyenvukhang/nvim-toggler](https://github.com/nguyenvukhang/nvim-toggler)
 - [AndrewRadev/switch.vim](https://github.com/AndrewRadev/switch.vim)
 
+> [!CAUTION]
+> BREAKING CHANGES
+>
+> - 2025-06-25: The Functions have changed.
+> - 2025-06-19: The configuration has changed.
+>
+> See the [Breaking changes](#breaking-changes) section for more information.
+
 ## Features
 
-- Searches for the configured words and opposite words in the current line
-  under the cursor.
-- Switches the found word to its opposite word.
-- The found word can also be a part of another word.
-  - e.g. _enabled_ with the cursor in `enable` becomes _disabled_.
-- Adapts the capitalization of the replaced word.
-  - e.g. `true`, `True`, `TRUE` -> `false`, `False`, `FALSE`.
-- The opposite words can be file type specific.
-- Optionally notifies when the word is found or not.
-- If several results are found, the user is asked which result to switch to.
+Finds a word or string under the cursor and replaces it
+with its opposite word or other supported variants.
 
-Extras:
+- Switches between opposite words (see [Switch opposites](#switch-opposites)).
+  - The found string can also be a part of a word.
+    - e.g. _enabled_ with the cursor in `enable` becomes _disabled_.
+  - Adapts the capitalization of the replaced word.
+    - e.g. `true`, `True`, `TRUE` -> `false`, `False`, `FALSE`.
+  - The opposite words can be file type specific.
 
-- [experimental] Switches between naming conventions (case types).
+- Switches between naming conventions (see [Switch cases](#switch-cases-naming-conventions)).
   - e.g. `foo_bar` -> `fooBar` -> `FooBar` -> `foo_bar`
+
+- If several results are found, the user is asked which result to switch to.
+- Optionally notifies when the word is found or not.
 
 ## Requirements
 
@@ -55,8 +55,9 @@ return {
   'tigion/nvim-opposites',
   -- event = { 'BufReadPost', 'BufNewFile' },
   keys = {
-    { '<Leader>i', function() require('opposites').switch() end, desc = 'Switch to opposite word' },
-    -- { '<Leader>I', function() require('opposites').cases.next() end, desc = 'Switch to next case type' },
+    { '<Leader>i', function() require('opposites').switch() end, desc = 'Switch word' },
+    -- { '<Leader>I', function() require('opposites').opposites.switch() end, desc = 'Switch to opposite word' },
+    -- { '<Leader>I', function() require('opposites').cases.switch() end, desc = 'Switch to next case type' },
   },
   ---@type opposites.Config
   opts = {},
@@ -65,19 +66,27 @@ return {
 
 ## Usage
 
+| Function                                  | Description                          |
+| ----------------------------------------- | ------------------------------------ |
+| `require('opposites').switch()`           | Switches to a supported variant.     |
+| `require('opposites').opposites.switch()` | Only switches to the opposite word.  |
+| `require('opposites').cases.switch()`     | Only switches to the next case type. |
+
+---
+
 ### Switch opposites
 
-Call `require('opposites').switch()` to switch to the opposite word under the
-cursor.
+Call `require('opposites').opposites.switch()` to switch to the opposite word
+under the cursor.
 
-For more own defined words, add them to the `words` or
-`words_by_ft` table in the `opposites` part of the `opposites.Config` table.
+For more own defined words, add them to the `words` or `words_by_ft` table in
+the `opposites` part of the `opposites.Config` table.
 
 > [!NOTE]
 > Redundant opposite words are removed automatically.
 
-If `use_default_words` and `use_default_words_by_ft` is set to `false`,
-only the user defined words will be used.
+If `use_default_words` and `use_default_words_by_ft` is set to `false`, only
+the user defined words will be used.
 
 ```lua
 opts = {
@@ -92,7 +101,7 @@ opts = {
         ['=='] = '~=',     -- Replaces the default `['=='] = '!='` for lua files.
       },
       ['sql'] = {
-        ['AND'] = 'OR',    -- Adds a new for SQL files.
+        ['asc'] = 'desc',    -- Adds a new for SQL files.
       },
     },
   },
@@ -100,7 +109,7 @@ opts = {
 ```
 
 > [!TIP]
-> It doesn't have to be opposites words that are exchanged.
+> It doesn't have to be opposites words that are exchanged (e.g. `['Vim'] = 'Neovim'`).
 
 #### Case sensitive mask
 
@@ -132,13 +141,16 @@ Example with `['enable'] = 'Disable'`:
 - found: `enable`
 - replaced with: `Disable`
 
-### Switch naming conventions (cases)
+---
+
+### Switch cases (naming conventions)
 
 > [!WARNING]
 > This feature is experimental and work in progress.
 > The word identification is very limited.
 
-Call `require('opposites').cases.next()` to switch to the next case type of the word under the cursor.
+Call `require('opposites').cases.switch()` to switch to the next case type of the
+word under the cursor.
 
 Example:
 
@@ -191,9 +203,10 @@ The default options are:
 
 ```lua
 ---@alias opposites.ConfigOppositesWords table<string, string>
----@alias opposites.ConfigOppositesWordsByFt table<string, opposites.ConfigOpposites>
+---@alias opposites.ConfigOppositesWordsByFt table<string, opposites.ConfigOppositesWords>
 
 ---@class opposites.ConfigOpposites
+---@field enabled? boolean Whether to enable the opposites module.
 ---@field use_case_sensitive_mask? boolean Whether to use a case sensitive mask.
 ---@field use_default_words? boolean Whether to use the default opposites.
 ---@field use_default_words_by_ft? boolean Whether to use the default opposites.
@@ -210,6 +223,7 @@ The default options are:
 ---@alias opposites.ConfigCasesTypes table<opposites.ConfigCasesId>
 
 ---@class opposites.ConfigCases
+---@field enabled? boolean Whether to enable the cases module.
 ---@field types? opposites.ConfigCasesTypes The allowed case types to parse.
 
 ---@class opposites.ConfigNotify
@@ -226,6 +240,7 @@ The default options are:
 local defaults = {
   max_line_length = 1000,
   opposites = {
+    enabled = true,
     use_case_sensitive_mask = true,
     use_default_words = true,
     use_default_words_by_ft = true,
@@ -252,6 +267,7 @@ local defaults = {
     },
   },
   cases = {
+    enabled = true,
     types = {
       'snake',
       'screaming_snake',
@@ -268,14 +284,31 @@ local defaults = {
 }
 ```
 
-For other plugin manager, call the setup function
-`require('opposites').setup({ ... })` directly.
+For other plugin manager, call the setup function `require('opposites').setup({
+  ... })` directly.
+
+## Breaking changes
+
+- **2025-06-25**: The Functions have changed.
+  - The default behavior of `require('opposites').switch()` is now to switch to
+    a supported variant.
+  - `require('opposites').opposites.switch()` is now only for switching to the
+    opposite word.
+  - `require('opposites').cases.next()` is now `require('opposites').cases.switch()`
+  - See the [Usage](#usage) section.
+
+- **2025-06-19**: The configuration has changed.
+  - Options for the opposites are now in the `opposites` table.
+  - The `opposites` and `opposites_by_ft` tables are now renamed to `words` and
+    `words_by_ft`.
+  - See the [Configuration](#configuration) section.
 
 ## TODO
 
 - [ ] Limit and check the user configuration.
-- [ ] Switch naming conventions (case types).
-- [ ] Add word lists support.
+- [ ] Support word chains like `{ 'foo', 'bar', 'baz' }`.
+- [x] Refactoring of the code for separate modules like `opposites` and `cases`.
+- [x] Switch naming conventions (case types).
 - [x] Use `vim.ui.select` instead of `vim.fn.inputlist`.
 - [x] Refactoring of the first quickly written code.
 - [x] Adapt the capitalization of the words to reduce words like `true`,

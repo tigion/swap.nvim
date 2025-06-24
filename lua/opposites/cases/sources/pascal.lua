@@ -1,4 +1,4 @@
----@type opposites.ConfigCasesIDs
+---@type opposites.ConfigCasesId
 local id = 'pascal'
 
 ---@type opposites.CasesSource

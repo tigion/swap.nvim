@@ -1,4 +1,4 @@
----@type opposites.ConfigCasesIDs
+---@type opposites.ConfigCasesId
 local id = 'snake'
 
 ---@type opposites.CasesSource
@@ -30,7 +30,7 @@ local M = {
   end,
 }
 
----@type opposites.ConfigCasesIDs
+---@type opposites.ConfigCasesId
 local id_screaming = 'screaming_' .. id
 
 M.screaming = {
