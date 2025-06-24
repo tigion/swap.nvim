@@ -17,26 +17,24 @@ Other similar or better plugins are:
 > [!CAUTION]
 > BREAKING CHANGES
 >
-> - 2025-06-25: The Functions have changed.
+> - 2025-06-24: The functions have changed.
 > - 2025-06-19: The configuration has changed.
 >
-> See the [Breaking changes](#breaking-changes) section for more information.
+> See the [Breaking Changes](#breaking-changes) section for more information.
 
 ## Features
 
 Finds a word or string under the cursor and replaces it
 with its opposite word or other supported variants.
 
-- Switches between opposite words (see [Switch opposites](#switch-opposites)).
+- Switches between opposite words (see [Switch Opposites](#switch-opposites)).
   - The found string can also be a part of a word.
     - e.g. _enabled_ with the cursor in `enable` becomes _disabled_.
   - Adapts the capitalization of the replaced word.
     - e.g. `true`, `True`, `TRUE` -> `false`, `False`, `FALSE`.
   - The opposite words can be file type specific.
-
-- Switches between naming conventions (see [Switch cases](#switch-cases-naming-conventions)).
+- Switches between naming conventions (see [Switch Cases](#switch-cases-naming-conventions)).
   - e.g. `foo_bar` -> `fooBar` -> `FooBar` -> `foo_bar`
-
 - If several results are found, the user is asked which result to switch to.
 - Optionally notifies when the word is found or not.
 
@@ -74,7 +72,7 @@ return {
 
 ---
 
-### Switch opposites
+### Switch Opposites
 
 Call `require('opposites').opposites.switch()` to switch to the opposite word
 under the cursor.
@@ -111,7 +109,7 @@ opts = {
 > [!TIP]
 > It doesn't have to be opposites words that are exchanged (e.g. `['Vim'] = 'Neovim'`).
 
-#### Case sensitive mask
+#### Case Sensitive Mask
 
 Flexible word recognition can be used to avoid having to configure every
 variant of capitalization. Activated by default.
@@ -143,7 +141,7 @@ Example with `['enable'] = 'Disable'`:
 
 ---
 
-### Switch cases (naming conventions)
+### Switch Cases (naming conventions)
 
 > [!WARNING]
 > This feature is experimental and work in progress.
@@ -287,9 +285,9 @@ local defaults = {
 For other plugin manager, call the setup function `require('opposites').setup({
   ... })` directly.
 
-## Breaking changes
+## Breaking Changes
 
-- **2025-06-25**: The Functions have changed.
+- **2025-06-24**: The functions have changed.
   - The default behavior of `require('opposites').switch()` is now to switch to
     a supported variant.
   - `require('opposites').opposites.switch()` is now only for switching to the
