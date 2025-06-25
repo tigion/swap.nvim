@@ -29,7 +29,7 @@ local M = {}
 ---@field found? boolean Whether to notify when a word is found.
 ---@field not_found? boolean Whether to notify when no word is found.
 
----@class opposites.Config -- opposites.config.config
+---@class opposites.Config
 ---@field max_line_length? integer The maximum line length to search.
 ---@field opposites? opposites.ConfigOpposites The options for the opposites.
 ---@field cases? opposites.ConfigCases The options for the cases.

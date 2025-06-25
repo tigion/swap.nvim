@@ -1,18 +1,12 @@
 # nvim-opposites
 
-A Neovim plugin to quickly switch the word under the cursor to its opposite
-word or other supported variants.
-
-For example, if the cursor is on `enable` and you press `<Leader>i` it will
+A [Neovim](https://neovim.io/) plugin to quickly switch the word under the
+cursor to its opposite word or other supported variants.  
+For example, if the cursor is on `enable` it will
 switch to `disable` and vice versa.
 
 > [!WARNING]
 > This plugin is based on my personal needs. Work in progress. 🚀
-
-Other similar or better plugins are:
-
-- [nguyenvukhang/nvim-toggler](https://github.com/nguyenvukhang/nvim-toggler)
-- [AndrewRadev/switch.vim](https://github.com/AndrewRadev/switch.vim)
 
 > [!CAUTION]
 > BREAKING CHANGES
@@ -20,29 +14,34 @@ Other similar or better plugins are:
 > - 2025-06-24: The functions have changed.
 > - 2025-06-19: The configuration has changed.
 >
-> See the [Breaking Changes](#breaking-changes) section for more information.
+> See the [Breaking Changes](#️-breaking-changes) section for more information.
 
-## Features
+Other similar or better plugins are:
+
+- [nguyenvukhang/nvim-toggler](https://github.com/nguyenvukhang/nvim-toggler)
+- [AndrewRadev/switch.vim](https://github.com/AndrewRadev/switch.vim)
+
+## ✨ Features
 
 Finds a word or string under the cursor and replaces it
 with its opposite word or other supported variants.
 
-- Switches between opposite words (see [Switch Opposites](#switch-opposites)).
+- **Switches between opposite words** (see [Switch Opposites](#-switch-opposites)).
   - The found string can also be a part of a word.
-    - e.g. _enabled_ with the cursor in `enable` becomes _disabled_.
+    - e.g. `enabled` with the cursor in `enable` becomes `disabled`.
   - Adapts the capitalization of the replaced word.
     - e.g. `true`, `True`, `TRUE` -> `false`, `False`, `FALSE`.
   - The opposite words can be file type specific.
-- Switches between naming conventions (see [Switch Cases](#switch-cases-naming-conventions)).
+- **Switches between naming conventions** (see [Switch Cases](#-switch-cases-naming-conventions)).
   - e.g. `foo_bar` -> `fooBar` -> `FooBar` -> `foo_bar`
-- If several results are found, the user is asked which result to switch to.
-- Optionally notifies when the word is found or not.
 
-## Requirements
+If several results are found, the user is asked which result to switch to.
+
+## ⚡️ Requirements
 
 - Neovim >= 0.10
 
-## Installation
+## 📦 Installation
 
 ### [lazy.nvim]
 
@@ -62,17 +61,28 @@ return {
 }
 ```
 
-## Usage
+## 🚀 Usage
 
-| Function                                  | Description                          |
-| ----------------------------------------- | ------------------------------------ |
-| `require('opposites').switch()`           | Switches to a supported variant.     |
-| `require('opposites').opposites.switch()` | Only switches to the opposite word.  |
-| `require('opposites').cases.switch()`     | Only switches to the next case type. |
+| Function                                  | Description                          | Submodule                                  |
+| ----------------------------------------- | ------------------------------------ | ------------------------------------------ |
+| `require('opposites').switch()`           | Switches to a supported variant.     | ([all](#switch-all))                       |
+| `require('opposites').opposites.switch()` | Only switches to the opposite word.  | [opposites](#-switch-opposites)            |
+| `require('opposites').cases.switch()`     | Only switches to the next case type. | [cases](#-switch-cases-naming-conventions) |
 
----
+Call one of the functions directly or use it in a key mapping.
 
-### Switch Opposites
+```lua
+vim.keymap.set('n', '<Leader>i', require('opposites').switch, { desc = 'Switch word' })
+```
+
+## 🎁 Submodules
+
+### Switch All
+
+Call `require('opposites').switch()` to switch to a supported variant of the
+word/string under the cursor. Supported variants are all enabled sub modules.
+
+### 🧩 Switch Opposites
 
 Call `require('opposites').opposites.switch()` to switch to the opposite word
 under the cursor.
@@ -139,9 +149,7 @@ Example with `['enable'] = 'Disable'`:
 - found: `enable`
 - replaced with: `Disable`
 
----
-
-### Switch Cases (naming conventions)
+### 🧩 Switch Cases (naming conventions)
 
 > [!WARNING]
 > This feature is experimental and work in progress.
@@ -195,7 +203,7 @@ Examples:
 - ✅ `foo_bar`, `foo_bar1`, `foo_bar_baz`
 - ❌ `foo`, `foo_1bar`, `_foo_bar`, `foo_bar_`, `foo_bar-baz`, `foo_bar_Baz`
 
-## Configuration
+## ⚙️ Configuration
 
 The default options are:
 
@@ -228,7 +236,7 @@ The default options are:
 ---@field found? boolean Whether to notify when a word is found.
 ---@field not_found? boolean Whether to notify when no word is found.
 
----@class opposites.Config -- opposites.config.config
+---@class opposites.Config
 ---@field max_line_length? integer The maximum line length to search.
 ---@field opposites? opposites.ConfigOpposites The options for the opposites.
 ---@field cases? opposites.ConfigCases The options for the cases.
@@ -285,7 +293,7 @@ local defaults = {
 For other plugin manager, call the setup function `require('opposites').setup({
   ... })` directly.
 
-## Breaking Changes
+## ‼️ Breaking Changes
 
 - **2025-06-24**: The functions have changed.
   - The default behavior of `require('opposites').switch()` is now to switch to
@@ -293,15 +301,15 @@ For other plugin manager, call the setup function `require('opposites').setup({
   - `require('opposites').opposites.switch()` is now only for switching to the
     opposite word.
   - `require('opposites').cases.next()` is now `require('opposites').cases.switch()`
-  - See the [Usage](#usage) section.
+  - See the [Usage](#-usage) section.
 
 - **2025-06-19**: The configuration has changed.
   - Options for the opposites are now in the `opposites` table.
   - The `opposites` and `opposites_by_ft` tables are now renamed to `words` and
     `words_by_ft`.
-  - See the [Configuration](#configuration) section.
+  - See the [Configuration](#️-configuration) section.
 
-## TODO
+## 📋 TODO
 
 - [ ] Limit and check the user configuration.
 - [ ] Support word chains like `{ 'foo', 'bar', 'baz' }`.
