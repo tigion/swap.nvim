@@ -26,14 +26,16 @@ Other similar or better plugins are:
 Finds a word or string under the cursor and replaces it
 with its opposite word or other supported variants.
 
-- **Switches between opposite words** (see [Switch Opposites](#-switch-opposites)).
+- **Switches between opposite words** (see [opposites]).
   - The found string can also be a part of a word.
     - e.g. `enabled` with the cursor in `enable` becomes `disabled`.
   - Adapts the capitalization of the replaced word.
     - e.g. `true`, `True`, `TRUE` -> `false`, `False`, `FALSE`.
   - The opposite words can be file type specific.
-- **Switches between naming conventions** (see [Switch Cases](#-switch-cases-naming-conventions)).
+- **Switches between naming conventions** (see [cases]).
   - e.g. `foo_bar` -> `fooBar` -> `FooBar` -> `foo_bar`
+- **Switches between word chains** (see [chains]).
+  - e.g. `foo` -> `bar` -> `baz` -> `foo`
 
 If several results are found, the user is asked which result to switch to.
 
@@ -55,6 +57,7 @@ return {
     { '<Leader>i', function() require('opposites').switch() end, desc = 'Switch word' },
     -- { '<Leader>I', function() require('opposites').opposites.switch() end, desc = 'Switch to opposite word' },
     -- { '<Leader>I', function() require('opposites').cases.switch() end, desc = 'Switch to next case type' },
+    -- { '<Leader>I', function() require('opposites').chains.switch() end, desc = 'Switch to next word' },
   },
   ---@type opposites.Config
   opts = {},
@@ -63,11 +66,12 @@ return {
 
 ## 🚀 Usage
 
-| Function                                  | Description                          | Submodule                                  |
-| ----------------------------------------- | ------------------------------------ | ------------------------------------------ |
-| `require('opposites').switch()`           | Switches to a supported variant.     | ([all](#switch-all))                       |
-| `require('opposites').opposites.switch()` | Only switches to the opposite word.  | [opposites](#-switch-opposites)            |
-| `require('opposites').cases.switch()`     | Only switches to the next case type. | [cases](#-switch-cases-naming-conventions) |
+| Function                                  | Description                                               | Submodule   |
+| ----------------------------------------- | --------------------------------------------------------- | ----------- |
+| `require('opposites').switch()`           | Uses [all](#switch-all) enabled and supported submodules. |             |
+| `require('opposites').opposites.switch()` | Only switches to the opposite word.                       | [opposites] |
+| `require('opposites').cases.switch()`     | Only switches to the next case type.                      | [cases]     |
+| `require('opposites').chains.switch()`    | Only switches to the next word chain.                     | [chains]    |
 
 Call one of the functions directly or use it in a key mapping.
 
@@ -75,14 +79,26 @@ Call one of the functions directly or use it in a key mapping.
 vim.keymap.set('n', '<Leader>i', require('opposites').switch, { desc = 'Switch word' })
 ```
 
-## 🎁 Submodules
-
 ### Switch All
 
 Call `require('opposites').switch()` to switch to a supported variant of the
-word/string under the cursor. Supported variants are all enabled sub modules.
+word/string under the cursor. Supported variants are all enabled [submodules](#-submodules).
 
-### 🧩 Switch Opposites
+Submodules can be enabled or disabled in the respective configuration tables
+with the `enabled` option. See the [Configuration](#️-configuration) section for
+the default options.
+
+## 🎁 Submodules
+
+| Submodule   | Description                                 |
+| ----------- | ------------------------------------------- |
+| [opposites] | Switches a word to its opposite word.       |
+| [cases]     | Switches the naming convention of a word.   |
+| [chains]    | Switches through the words in a word chain. |
+
+### 🧩 opposites
+
+[opposites]: #-opposites
 
 Call `require('opposites').opposites.switch()` to switch to the opposite word
 under the cursor.
@@ -100,7 +116,7 @@ the user defined words will be used.
 opts = {
   opposites = {
     words = {
-      ['angel'] = 'devil', -- Adds a new default.
+      ['angel'] = 'devil', -- Adds a new one.
       ['yes'] = 'ja',      -- Replaces the default `['yes'] = 'no'`.
       ['min'] = nil,       -- Removes a default.
     },
@@ -109,7 +125,7 @@ opts = {
         ['=='] = '~=',     -- Replaces the default `['=='] = '!='` for lua files.
       },
       ['sql'] = {
-        ['asc'] = 'desc',    -- Adds a new for SQL files.
+        ['asc'] = 'desc',  -- Adds a new for SQL files.
       },
     },
   },
@@ -149,7 +165,9 @@ Example with `['enable'] = 'Disable'`:
 - found: `enable`
 - replaced with: `Disable`
 
-### 🧩 Switch Cases (naming conventions)
+### 🧩 cases
+
+[cases]: #-cases
 
 > [!WARNING]
 > This feature is experimental and work in progress.
@@ -203,13 +221,59 @@ Examples:
 - ✅ `foo_bar`, `foo_bar1`, `foo_bar_baz`
 - ❌ `foo`, `foo_1bar`, `_foo_bar`, `foo_bar_`, `foo_bar-baz`, `foo_bar_Baz`
 
+### 🧩 chains
+
+[chains]: #-chains
+
+Call `require(‘opposites’).chains.switch()` to switch to the next word in
+a word chain under the cursor.
+
+Examples:
+
+- `Monday` -> `Tuesday` -> `Wednesday` -> ... -> `Sunday` -> `Monday`
+- `foo` -> `bar` -> `baz` -> `qux` -> `foo`
+
+The word chains are defined in the `chains` table in the `opposites.Config`.
+
+```lua
+opts = {
+  chains = {
+    words = {
+      { 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday' },
+      { 'foo', 'bar', 'baz', 'qux' },
+    },
+  },
+}
+```
+
+Rules:
+
+- The word chains must be at least 2 words long.
+- The word chains should not contain the same word more than once.
+
 ## ⚙️ Configuration
 
 The default options are:
 
+<details>
+  <summary>Show annotations and descriptions of the configuration</summary>
+
 ```lua
+---@alias opposites.ConfigModule
+--- | 'opposites'
+--- | 'cases'
+--- | 'chains'
 ---@alias opposites.ConfigOppositesWords table<string, string>
 ---@alias opposites.ConfigOppositesWordsByFt table<string, opposites.ConfigOppositesWords>
+---@alias opposites.ConfigCasesId
+--- | 'snake' snake_case
+--- | 'screaming_snake' SCREAMING_SNAKE_CASE
+--- | 'kebab' kebab-case
+--- | 'screaming_kebab' SCREAMING-KEBAB-CASE
+--- | 'camel' camelCase
+--- | 'pascal' PascalCase
+---@alias opposites.ConfigCasesTypes table<opposites.ConfigCasesId>
+---@alias opposites.ConfigChainsWords table<table<string>>
 
 ---@class opposites.ConfigOpposites
 ---@field enabled? boolean Whether to enable the opposites module.
@@ -219,18 +283,13 @@ The default options are:
 ---@field words? opposites.ConfigOppositesWords The words with their opposite words.
 ---@field words_by_ft? opposites.ConfigOppositesWordsByFt The file type specific words with their opposite words.
 
----@alias opposites.ConfigCasesId
---- | 'snake' snake_case
---- | 'screaming_snake' SCREAMING_SNAKE_CASE
---- | 'kebab' kebab-case
---- | 'screaming_kebab' SCREAMING-KEBAB-CASE
---- | 'camel' camelCase
---- | 'pascal' PascalCase
----@alias opposites.ConfigCasesTypes table<opposites.ConfigCasesId>
-
 ---@class opposites.ConfigCases
 ---@field enabled? boolean Whether to enable the cases module.
 ---@field types? opposites.ConfigCasesTypes The allowed case types to parse.
+
+---@class opposites.ConfigChains
+---@field enabled? boolean Whether to enable the cases module.
+---@field words? opposites.ConfigChainsWords The words to search for.
 
 ---@class opposites.ConfigNotify
 ---@field found? boolean Whether to notify when a word is found.
@@ -241,7 +300,11 @@ The default options are:
 ---@field opposites? opposites.ConfigOpposites The options for the opposites.
 ---@field cases? opposites.ConfigCases The options for the cases.
 ---@field notify? opposites.ConfigNotify The notifications to show.
+```
 
+</details>
+
+```lua
 ---@type opposites.Config
 local defaults = {
   max_line_length = 1000,
@@ -283,6 +346,10 @@ local defaults = {
       'pascal',
     },
   },
+  chains = {
+    enabled = true,
+    words = {},
+  },
   notify = {
     found = false,
     not_found = true,
@@ -312,7 +379,7 @@ For other plugin manager, call the setup function `require('opposites').setup({
 ## 📋 TODO
 
 - [ ] Limit and check the user configuration.
-- [ ] Support word chains like `{ 'foo', 'bar', 'baz' }`.
+- [x] Support word chains like `{ 'foo', 'bar', 'baz' }`.
 - [x] Refactoring of the code for separate modules like `opposites` and `cases`.
 - [x] Switch naming conventions (case types).
 - [x] Use `vim.ui.select` instead of `vim.fn.inputlist`.

@@ -5,6 +5,7 @@ local util = require('opposites.util')
 
 local opposites = require('opposites.opposites')
 local cases = require('opposites.cases')
+local chains = require('opposites.chains')
 
 ---@class opposites
 local M = {}
@@ -48,11 +49,19 @@ local function use_module(module, line, cursor, quiet)
   local results = {}
 
   if module == 'opposites' and config.options.opposites.enabled then
+    -- Uses the opposites module.
     results = opposites.get_results(line, cursor, quiet)
   elseif module == 'cases' and config.options.cases.enabled then
+    -- Uses the cases module.
     results = cases.get_results(line, cursor, quiet)
+  elseif module == 'chains' and config.options.chains.enabled then
+    -- Uses the chains module.
+    results = chains.get_results(line, cursor, quiet)
   elseif module == 'all' then
-    for _, m in ipairs({ 'opposites', 'cases' }) do
+    -- Uses all enabled modules.
+    ---@type opposites.ConfigModule[]
+    local modules = { 'opposites', 'cases', 'chains' }
+    for _, m in ipairs(modules) do
       if config.options[m].enabled then
         local tmp_results = use_module(m, line, cursor, true)
         if tmp_results ~= nil then util.table.append(results, tmp_results) end
@@ -107,6 +116,11 @@ M.opposites = {
 -- Cases
 M.cases = {
   switch = function() switch('cases') end,
+}
+
+-- Chains
+M.chains = {
+  switch = function() switch('chains') end,
 }
 
 return M

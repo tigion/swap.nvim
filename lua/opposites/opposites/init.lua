@@ -30,7 +30,7 @@ local M = {}
 ---@return integer # The start index of the word or `-1` if not found.
 local function find_word_in_line(line, col, word)
   local min_idx = (col + 1) - (#word - 1)
-  local idx = string.find(line, word, min_idx, true)
+  local idx = string.find(line, word, min_idx, true) -- Uses no pattern matching.
   return idx ~= nil and idx <= (col + 1) and idx or -1
 end
 
@@ -102,7 +102,7 @@ function M.get_results(line, cursor, quiet)
   -- Gets the found results.
   local results = find_results(line, cursor)
 
-  -- Checks if we found any results.
+  -- Checks and notifies if we found any results.
   if #results < 1 then
     -- No results found.
     if not quiet and config.options.notify.not_found then notify.info('No opposite word found', cursor) end
