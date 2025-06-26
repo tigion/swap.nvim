@@ -39,6 +39,7 @@ end
 
 ---Replaces the string in the current line.
 ---This function is used as a callback function for `vim.ui.select`.
+---@param result opposites.Result
 function M.replace_str_in_current_line(result)
   -- Gets the current line.
   local current_line = vim.api.nvim_get_current_line()
@@ -55,7 +56,7 @@ end
 
 ---Handles the results to replace the string in the current line.
 ---If there are multiple results, asks the user to select one.
----@param results table<opposites.Result>
+---@param results opposites.Results
 function M.handle_results(results)
   if #results < 1 then
     -- No results found.

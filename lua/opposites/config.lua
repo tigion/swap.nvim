@@ -14,8 +14,8 @@ local M = {}
 --- | 'screaming_kebab' SCREAMING-KEBAB-CASE
 --- | 'camel' camelCase
 --- | 'pascal' PascalCase
----@alias opposites.ConfigCasesTypes table<opposites.ConfigCasesId>
----@alias opposites.ConfigChainsWords table<table<string>>
+---@alias opposites.ConfigCasesTypes opposites.ConfigCasesId[]
+---@alias opposites.ConfigChainsWords string[][]
 
 ---@class opposites.ConfigOpposites
 ---@field enabled? boolean Whether to enable the opposites module.
@@ -31,7 +31,7 @@ local M = {}
 
 ---@class opposites.ConfigChains
 ---@field enabled? boolean Whether to enable the cases module.
----@field words? opposites.ConfigChainsWords The words to search for.
+---@field words? opposites.ConfigChainsWords The word chains to search for.
 
 ---@class opposites.ConfigNotify
 ---@field found? boolean Whether to notify when a word is found.
@@ -87,7 +87,7 @@ local defaults = {
   },
   chains = {
     enabled = true,
-    words = {},
+    words = {}, -- Empty by default. Will be overwritten by the user configuration.
   },
   notify = {
     found = false,

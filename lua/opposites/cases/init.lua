@@ -6,23 +6,21 @@ local util = require('opposites.util')
 M = {}
 
 -- TODO: Needs some refactoring.
--- - Refactor case data like `pascal.lua`.
--- - Optimize annotations and naming.
 
 ---@class opposites.CasesSource
 ---@field id opposites.ConfigCasesId
 ---@field name string
 ---@field parser fun(word: string): opposites.CasesResult|boolean
----@field converter fun(parts: table<string>, scream?: boolean): string
+---@field converter fun(parts: string[], scream?: boolean): string
 ---@field screaming? opposites.CasesSource
 
 ---@class opposites.CasesType
 ---@field name string
 ---@field parser fun(word: string): opposites.CasesResult|boolean
----@field converter fun(parts: table<string>, scream?: boolean): string
+---@field converter fun(parts: string[], scream?: boolean): string
 
 ---@class opposites.CasesResult
----@field parts table<string>
+---@field parts string[]
 ---@field case_type_id string
 
 local snake = require('opposites.cases.sources.snake')
@@ -180,7 +178,7 @@ end
 ---@param line string The line string to search in.
 ---@param cursor opposites.Cursor The cursors position.
 ---@param quiet? boolean Whether to quiet the notifications.
----@return table<opposites.Result> # The found results.
+---@return opposites.Results # The found results.
 local function find_results(line, cursor, quiet)
   local results = {}
 
@@ -216,7 +214,7 @@ end
 ---@param line string The line string to search in.
 ---@param cursor opposites.Cursor The cursors position.
 ---@param quiet? boolean Whether to quiet the notifications.
----@return table<opposites.Result> # The found results.
+---@return opposites.Results # The found results.
 function M.get_results(line, cursor, quiet)
   quiet = quiet or false
 

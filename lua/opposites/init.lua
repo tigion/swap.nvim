@@ -26,6 +26,8 @@ local M = {}
 ---@field cursor opposites.Cursor The cursor position.
 ---@field module string The module name.
 
+---@alias opposites.Results opposites.Result[]
+
 ---@param opts? opposites.Config
 function M.setup(opts)
   -- Checks the supported neovim version.
@@ -43,7 +45,7 @@ end
 ---@param line string The current line string.
 ---@param cursor opposites.Cursor The current cursor position.
 ---@param quiet? boolean Whether to quiet the notifications.
----@return table<opposites.Result> # The found results or nil if no results found.
+---@return opposites.Results # The found results.
 local function use_module(module, line, cursor, quiet)
   quiet = quiet or false
   local results = {}

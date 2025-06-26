@@ -38,10 +38,10 @@ end
 ---in the given line near the given column.
 ---@param line string The line string to search in.
 ---@param cursor opposites.Cursor The cursors position.
----@return table<opposites.Result> # The found results.
+---@return opposites.Results # The found results.
 local function find_results(line, cursor)
   local words = config.merge_opposite_words()
-  local results = {} ---@type table<opposites.Result>
+  local results = {} ---@type opposites.Results
 
   -- Finds the word or the opposite word in the line.
   for w, ow in pairs(words) do
@@ -95,7 +95,7 @@ end
 ---@param line string The line string to search in.
 ---@param cursor opposites.Cursor The cursors position.
 ---@param quiet? boolean Whether to quiet the notifications.
----@return table<opposites.Result> # The found results.
+---@return opposites.Results # The found results.
 function M.get_results(line, cursor, quiet)
   quiet = quiet or false
 

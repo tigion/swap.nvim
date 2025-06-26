@@ -272,8 +272,8 @@ The default options are:
 --- | 'screaming_kebab' SCREAMING-KEBAB-CASE
 --- | 'camel' camelCase
 --- | 'pascal' PascalCase
----@alias opposites.ConfigCasesTypes table<opposites.ConfigCasesId>
----@alias opposites.ConfigChainsWords table<table<string>>
+---@alias opposites.ConfigCasesTypes opposites.ConfigCasesId[]
+---@alias opposites.ConfigChainsWords string[][]
 
 ---@class opposites.ConfigOpposites
 ---@field enabled? boolean Whether to enable the opposites module.
@@ -289,7 +289,7 @@ The default options are:
 
 ---@class opposites.ConfigChains
 ---@field enabled? boolean Whether to enable the cases module.
----@field words? opposites.ConfigChainsWords The words to search for.
+---@field words? opposites.ConfigChainsWords The word chains to search for.
 
 ---@class opposites.ConfigNotify
 ---@field found? boolean Whether to notify when a word is found.
@@ -299,6 +299,7 @@ The default options are:
 ---@field max_line_length? integer The maximum line length to search.
 ---@field opposites? opposites.ConfigOpposites The options for the opposites.
 ---@field cases? opposites.ConfigCases The options for the cases.
+---@field chains? opposites.ConfigChains The options for the chains.
 ---@field notify? opposites.ConfigNotify The notifications to show.
 ```
 
