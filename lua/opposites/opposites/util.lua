@@ -14,18 +14,18 @@ end
 
 ---Returns the case sensitive mask for the given word.
 ---
----- If the word is uppercase, the mask is true.
 ---- If the word is lowercase, the mask is false.
+---- If the word is uppercase, the mask is true.
 ---- If the word is mixed case, the mask is a string to represent the case.
 ---
 ---@param word string The word to get the mask for.
 ---@return string|boolean # The case sensitive mask.
 function M.get_case_sensitive_mask(word)
-  -- Upper or lower case.
-  if word == word:upper() then
-    return true
-  elseif word == word:lower() then
+  -- Lower or upper case.
+  if word == word:lower() then
     return false
+  elseif word == word:upper() then
+    return true
   end
   -- Mixed case.
   local mask = ''
