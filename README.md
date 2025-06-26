@@ -66,12 +66,12 @@ return {
 
 ## 🚀 Usage
 
-| Function                                  | Description                                               | Submodule   |
-| ----------------------------------------- | --------------------------------------------------------- | ----------- |
-| `require('opposites').switch()`           | Uses [all](#switch-all) enabled and supported submodules. |             |
-| `require('opposites').opposites.switch()` | Only switches to the opposite word.                       | [opposites] |
-| `require('opposites').cases.switch()`     | Only switches to the next case type.                      | [cases]     |
-| `require('opposites').chains.switch()`    | Only switches to the next word chain.                     | [chains]    |
+| Function                                  | Description                                 | Submodule   |
+| ----------------------------------------- | ------------------------------------------- | ----------- |
+| `require('opposites').switch()`           | Uses [all](#switch-all) allowed submodules. |             |
+| `require('opposites').opposites.switch()` | Only switches to the opposite word.         | [opposites] |
+| `require('opposites').cases.switch()`     | Only switches to the next case type.        | [cases]     |
+| `require('opposites').chains.switch()`    | Only switches to the next word chain.       | [chains]    |
 
 Call one of the functions directly or use it in a key mapping.
 
@@ -79,14 +79,23 @@ Call one of the functions directly or use it in a key mapping.
 vim.keymap.set('n', '<Leader>i', require('opposites').switch, { desc = 'Switch word' })
 ```
 
+See the [Configuration](#️-configuration) section for the default options.
+
 ### Switch All
 
 Call `require('opposites').switch()` to switch to a supported variant of the
-word/string under the cursor. Supported variants are all enabled [submodules](#-submodules).
+word/string under the cursor. Supported variants are all allowed [submodules](#-submodules).
 
-Submodules can be enabled or disabled in the respective configuration tables
-with the `enabled` option. See the [Configuration](#️-configuration) section for
-the default options.
+The allowed submodules can be configured in the `all.modules` table in the
+`opposites.Config` table.
+
+```lua
+opts = {
+  all = {
+    modules = { 'opposites', 'cases', 'chains' },
+  },
+}
+```
 
 ## 🎁 Submodules
 
@@ -275,6 +284,9 @@ The default options are:
 ---@alias opposites.ConfigCasesTypes opposites.ConfigCasesId[]
 ---@alias opposites.ConfigChainsWords string[][]
 
+---@class opposites.ConfigAll
+---@field modules? opposites.ConfigModule[] The default submodules to use.
+
 ---@class opposites.ConfigOpposites
 ---@field enabled? boolean Whether to enable the opposites module.
 ---@field use_case_sensitive_mask? boolean Whether to use a case sensitive mask.
@@ -309,6 +321,9 @@ The default options are:
 ---@type opposites.Config
 local defaults = {
   max_line_length = 1000,
+  all = {
+    modules = { 'opposites', 'cases', 'chains' },
+  },
   opposites = {
     enabled = true,
     use_case_sensitive_mask = true,

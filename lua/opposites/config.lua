@@ -17,8 +17,10 @@ local M = {}
 ---@alias opposites.ConfigCasesTypes opposites.ConfigCasesId[]
 ---@alias opposites.ConfigChainsWords string[][]
 
+---@class opposites.ConfigAll
+---@field modules? opposites.ConfigModule[] The default submodules to use.
+
 ---@class opposites.ConfigOpposites
----@field enabled? boolean Whether to enable the opposites module.
 ---@field use_case_sensitive_mask? boolean Whether to use a case sensitive mask.
 ---@field use_default_words? boolean Whether to use the default opposites.
 ---@field use_default_words_by_ft? boolean Whether to use the default opposites.
@@ -26,11 +28,9 @@ local M = {}
 ---@field words_by_ft? opposites.ConfigOppositesWordsByFt The file type specific words with their opposite words.
 
 ---@class opposites.ConfigCases
----@field enabled? boolean Whether to enable the cases module.
 ---@field types? opposites.ConfigCasesTypes The allowed case types to parse.
 
 ---@class opposites.ConfigChains
----@field enabled? boolean Whether to enable the cases module.
 ---@field words? opposites.ConfigChainsWords The word chains to search for.
 
 ---@class opposites.ConfigNotify
@@ -39,6 +39,7 @@ local M = {}
 
 ---@class opposites.Config
 ---@field max_line_length? integer The maximum line length to search.
+---@field all? opposites.ConfigAll The options for all modules.
 ---@field opposites? opposites.ConfigOpposites The options for the opposites.
 ---@field cases? opposites.ConfigCases The options for the cases.
 ---@field chains? opposites.ConfigChains The options for the chains.
@@ -47,8 +48,10 @@ local M = {}
 ---@type opposites.Config
 local defaults = {
   max_line_length = 1000,
+  all = {
+    modules = { 'opposites', 'cases', 'chains' },
+  },
   opposites = {
-    enabled = true,
     use_case_sensitive_mask = true,
     use_default_words = true,
     use_default_words_by_ft = true,
@@ -75,7 +78,6 @@ local defaults = {
     },
   },
   cases = {
-    enabled = true,
     types = {
       'snake',
       'screaming_snake',
@@ -86,7 +88,6 @@ local defaults = {
     },
   },
   chains = {
-    enabled = true,
     words = {}, -- Empty by default. Will be overwritten by the user configuration.
   },
   notify = {

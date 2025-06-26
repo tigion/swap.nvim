@@ -41,7 +41,7 @@ function M.setup(opts)
 end
 
 ---Uses the given module to get the results.
----@param module string The module to use.
+---@param module? opposites.ConfigModule The module to use.
 ---@param line string The current line string.
 ---@param cursor opposites.Cursor The current cursor position.
 ---@param quiet? boolean Whether to quiet the notifications.
@@ -50,24 +50,12 @@ local function use_module(module, line, cursor, quiet)
   quiet = quiet or false
   local results = {}
 
-  if module == 'opposites' and config.options.opposites.enabled then
-    -- Uses the opposites module.
-    results = opposites.get_results(line, cursor, quiet)
-  elseif module == 'cases' and config.options.cases.enabled then
-    -- Uses the cases module.
-    results = cases.get_results(line, cursor, quiet)
-  elseif module == 'chains' and config.options.chains.enabled then
-    -- Uses the chains module.
-    results = chains.get_results(line, cursor, quiet)
-  elseif module == 'all' then
-    -- Uses all enabled modules.
-    ---@type opposites.ConfigModule[]
-    local modules = { 'opposites', 'cases', 'chains' }
-    for _, m in ipairs(modules) do
-      if config.options[m].enabled then
-        local tmp_results = use_module(m, line, cursor, true)
-        if tmp_results ~= nil then util.table.append(results, tmp_results) end
-      end
+  if module == nil then
+    -- Uses all allowed modules.
+    local allowed_modules = config.options.all.modules or {}
+    for _, m in ipairs(allowed_modules) do
+      local module_results = use_module(m, line, cursor, true)
+      if module_results ~= nil then util.table.append(results, module_results) end
     end
     if #results < 1 then
       -- No results found.
@@ -80,13 +68,22 @@ local function use_module(module, line, cursor, quiet)
       end
       notify.info(results[1].str .. ' -> ' .. table.concat(new_strs, ', '), cursor)
     end
+  elseif module == 'opposites' then
+    -- Uses the opposites module.
+    results = opposites.get_results(line, cursor, quiet)
+  elseif module == 'cases' then
+    -- Uses the cases module.
+    results = cases.get_results(line, cursor, quiet)
+  elseif module == 'chains' then
+    -- Uses the chains module.
+    results = chains.get_results(line, cursor, quiet)
   end
 
   return results
 end
 
 ---Switches string under the cursor with the given module.
----@param module string The module to use.
+---@param module? opposites.ConfigModule The module to use.
 local function switch(module)
   -- Gets the current line string and the current cursor position.
   local line = vim.api.nvim_get_current_line()
@@ -108,7 +105,7 @@ local function switch(module)
 end
 
 -- All
-M.switch = function() switch('all') end
+M.switch = switch
 
 -- Opposites
 M.opposites = {
