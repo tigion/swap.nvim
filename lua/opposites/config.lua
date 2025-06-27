@@ -52,7 +52,7 @@ local M = {}
 local defaults = {
   max_line_length = 1000,
   all = {
-    modules = { 'opposites', 'cases', 'chains', 'todos' },
+    modules = { 'opposites', 'chains' },
   },
   opposites = {
     use_case_sensitive_mask = true,
