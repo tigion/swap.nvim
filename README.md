@@ -27,15 +27,15 @@ Finds a word or string under the cursor and replaces it
 with its opposite word or other supported variants.
 
 - **Switches between opposite words** (see [opposites]).
-  - The found string can also be a part of a word.
-    - e.g. `enabled` with the cursor in `enable` becomes `disabled`.
+  - e.g. `enable` -> `disable`
   - Adapts the capitalization of the replaced word.
     - e.g. `true`, `True`, `TRUE` -> `false`, `False`, `FALSE`.
   - The opposite words can be file type specific.
-- **Switches between naming conventions** (see [cases]).
-  - e.g. `foo_bar` -> `fooBar` -> `FooBar` -> `foo_bar`
 - **Switches between word chains** (see [chains]).
   - e.g. `foo` -> `bar` -> `baz` -> `foo`
+  - The word chains can be file type specific.
+- **Switches between naming conventions** (see [cases]).
+  - e.g. `foo_bar` -> `fooBar` -> `FooBar` -> `foo_bar`
 
 If several results are found, the user is asked which result to switch to.
 
@@ -70,8 +70,8 @@ return {
 | ----------------------------------------- | ------------------------------------------- | ----------- |
 | `require('opposites').switch()`           | Uses [all](#switch-all) allowed submodules. |             |
 | `require('opposites').opposites.switch()` | Only switches to the opposite word.         | [opposites] |
-| `require('opposites').cases.switch()`     | Only switches to the next case type.        | [cases]     |
 | `require('opposites').chains.switch()`    | Only switches to the next word chain.       | [chains]    |
+| `require('opposites').cases.switch()`     | Only switches to the next case type.        | [cases]     |
 
 Call one of the functions directly or use it in a key mapping.
 
@@ -89,6 +89,8 @@ word/string under the cursor. Supported variants are all allowed [submodules](#-
 The allowed submodules can be configured in the `all.modules` table in the
 `opposites.Config` table.
 
+Example:
+
 ```lua
 opts = {
   all = {
@@ -102,21 +104,18 @@ opts = {
 | Submodule   | Description                                 |
 | ----------- | ------------------------------------------- |
 | [opposites] | Switches a word to its opposite word.       |
-| [cases]     | Switches the naming convention of a word.   |
 | [chains]    | Switches through the words in a word chain. |
+| [cases]     | Switches the naming convention of a word.   |
 
 ### 🧩 opposites
 
 [opposites]: #-opposites
 
 Call `require('opposites').opposites.switch()` to switch to the opposite word
-under the cursor.
+or string under the cursor. The found string can also be a part of a word.
 
 For more own defined words, add them to the `words` or `words_by_ft` table in
 the `opposites` part of the `opposites.Config` table.
-
-> [!NOTE]
-> Redundant opposite words are removed automatically.
 
 If `use_default_words` and `use_default_words_by_ft` is set to `false`, only
 the user defined words will be used.
@@ -176,6 +175,45 @@ Example with `['enable'] = 'Disable'`:
 - found: `enable`
 - replaced with: `Disable`
 
+### 🧩 chains
+
+[chains]: #-chains
+
+Call `require(‘opposites’).chains.switch()` to switch to the next word or
+string in a word chain under the cursor. The found string can also be a part of
+a word.
+
+Examples:
+
+- `Monday` -> `Tuesday` -> `Wednesday` -> ... -> `Sunday` -> `Monday`
+- `foo` -> `bar` -> `baz` -> `qux` -> `foo`
+
+The word chains are defined in the `words` and `words_by_ft` tables in
+the `chains` part of the `opposites.Config` table.
+
+Example:
+
+```lua
+opts = {
+  chains = {
+    words = { -- Default word chains.
+      { 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday' },
+      { 'foo', 'bar', 'baz', 'qux' },
+    },
+    words_by_ft = { -- File type specific word chains.
+      markdown = {
+        { '[!NOTE]', '[!TIP]', '[!IMPORTANT]', '[!WARNING]', '[!CAUTION]' }, -- GitHub alerts
+      },
+    },
+  },
+}
+```
+
+Rules:
+
+- The word chains must be at least 2 words long.
+- The word chains should not contain the same word more than once.
+
 ### 🧩 cases
 
 [cases]: #-cases
@@ -233,44 +271,6 @@ Examples:
 
 - ✅ `foo_bar`, `foo_bar1`, `foo_bar_baz`
 - ❌ `foo`, `foo_1bar`, `_foo_bar`, `foo_bar_`, `foo_bar-baz`, `foo_bar_Baz`
-
-### 🧩 chains
-
-[chains]: #-chains
-
-Call `require(‘opposites’).chains.switch()` to switch to the next word in
-a word chain under the cursor.
-
-Examples:
-
-- `Monday` -> `Tuesday` -> `Wednesday` -> ... -> `Sunday` -> `Monday`
-- `foo` -> `bar` -> `baz` -> `qux` -> `foo`
-
-The word chains are defined in the `words` and `words_by_ft` tables in
-the `chains` part of the `opposites.Config` table.
-
-Example:
-
-```lua
-opts = {
-  chains = {
-    words = { -- Default word chains.
-      { 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday' },
-      { 'foo', 'bar', 'baz', 'qux' },
-    },
-    words_by_ft = { -- File type specific word chains.
-      markdown = {
-        { '[!NOTE]', '[!TIP]', '[!IMPORTANT]', '[!WARNING]', '[!CAUTION]' }, -- GitHub alerts
-      },
-    },
-  },
-}
-```
-
-Rules:
-
-- The word chains must be at least 2 words long.
-- The word chains should not contain the same word more than once.
 
 ## ⚙️ Configuration
 
