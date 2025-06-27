@@ -121,15 +121,17 @@ the `opposites` part of the `opposites.Config` table.
 If `use_default_words` and `use_default_words_by_ft` is set to `false`, only
 the user defined words will be used.
 
+Example:
+
 ```lua
 opts = {
   opposites = {
-    words = {
+    words = { -- Default opposite words.
       ['angel'] = 'devil', -- Adds a new one.
       ['yes'] = 'ja',      -- Replaces the default `['yes'] = 'no'`.
       ['min'] = nil,       -- Removes a default.
     },
-    words_by_ft = {
+    words_by_ft = { -- File type specific opposite words.
       ['lua'] = {
         ['=='] = '~=',     -- Replaces the default `['=='] = '!='` for lua files.
       },
@@ -201,6 +203,8 @@ Supported case types are:
 The allowed case types and the switch order can be configured in the `types`
 table in the `cases` part of the `opposites.Config` table.
 
+Example:
+
 ```lua
 opts = {
   cases = {
@@ -242,14 +246,22 @@ Examples:
 - `Monday` -> `Tuesday` -> `Wednesday` -> ... -> `Sunday` -> `Monday`
 - `foo` -> `bar` -> `baz` -> `qux` -> `foo`
 
-The word chains are defined in the `chains` table in the `opposites.Config`.
+The word chains are defined in the `words` and `words_by_ft` tables in
+the `chains` part of the `opposites.Config` table.
+
+Example:
 
 ```lua
 opts = {
   chains = {
-    words = {
+    words = { -- Default word chains.
       { 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday' },
       { 'foo', 'bar', 'baz', 'qux' },
+    },
+    words_by_ft = { -- File type specific word chains.
+      markdown = {
+        { '[!NOTE]', '[!TIP]', '[!IMPORTANT]', '[!WARNING]', '[!CAUTION]' }, -- GitHub alerts
+      },
     },
   },
 }
@@ -283,12 +295,12 @@ The default options are:
 --- | 'pascal' PascalCase
 ---@alias opposites.ConfigCasesTypes opposites.ConfigCasesId[]
 ---@alias opposites.ConfigChainsWords string[][]
+---@alias opposites.ConfigChainsWordsByFt table<string, opposites.ConfigChainsWords>
 
 ---@class opposites.ConfigAll
 ---@field modules? opposites.ConfigModule[] The default submodules to use.
 
 ---@class opposites.ConfigOpposites
----@field enabled? boolean Whether to enable the opposites module.
 ---@field use_case_sensitive_mask? boolean Whether to use a case sensitive mask.
 ---@field use_default_words? boolean Whether to use the default opposites.
 ---@field use_default_words_by_ft? boolean Whether to use the default opposites.
@@ -296,12 +308,11 @@ The default options are:
 ---@field words_by_ft? opposites.ConfigOppositesWordsByFt The file type specific words with their opposite words.
 
 ---@class opposites.ConfigCases
----@field enabled? boolean Whether to enable the cases module.
 ---@field types? opposites.ConfigCasesTypes The allowed case types to parse.
 
 ---@class opposites.ConfigChains
----@field enabled? boolean Whether to enable the cases module.
 ---@field words? opposites.ConfigChainsWords The word chains to search for.
+---@field words_by_ft? opposites.ConfigChainsWordsByFt The file type specific word chains to search for.
 
 ---@class opposites.ConfigNotify
 ---@field found? boolean Whether to notify when a word is found.
@@ -325,7 +336,6 @@ local defaults = {
     modules = { 'opposites', 'cases', 'chains' },
   },
   opposites = {
-    enabled = true,
     use_case_sensitive_mask = true,
     use_default_words = true,
     use_default_words_by_ft = true,
@@ -352,7 +362,6 @@ local defaults = {
     },
   },
   cases = {
-    enabled = true,
     types = {
       'snake',
       'screaming_snake',
@@ -363,8 +372,8 @@ local defaults = {
     },
   },
   chains = {
-    enabled = true,
     words = {},
+    words_by_ft = {},
   },
   notify = {
     found = false,

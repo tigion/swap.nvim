@@ -16,6 +16,7 @@ local M = {}
 --- | 'pascal' PascalCase
 ---@alias opposites.ConfigCasesTypes opposites.ConfigCasesId[]
 ---@alias opposites.ConfigChainsWords string[][]
+---@alias opposites.ConfigChainsWordsByFt table<string, opposites.ConfigChainsWords>
 
 ---@class opposites.ConfigAll
 ---@field modules? opposites.ConfigModule[] The default submodules to use.
@@ -32,6 +33,7 @@ local M = {}
 
 ---@class opposites.ConfigChains
 ---@field words? opposites.ConfigChainsWords The word chains to search for.
+---@field words_by_ft? opposites.ConfigChainsWordsByFt The file type specific word chains to search for.
 
 ---@class opposites.ConfigNotify
 ---@field found? boolean Whether to notify when a word is found.
@@ -89,6 +91,7 @@ local defaults = {
   },
   chains = {
     words = {}, -- Empty by default. Will be overwritten by the user configuration.
+    words_by_ft = {}, -- Empty by default. Will be overwritten by the user configuration.
   },
   notify = {
     found = false,

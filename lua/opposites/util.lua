@@ -14,9 +14,9 @@ function M.table.length(table)
   return count
 end
 
----Appends values to a table.
----@param table table
----@param values table
+---Appends values to a table (array).
+---@param table any[] -- table
+---@param values any[] -- table
 function M.table.append(table, values)
   for _, v in ipairs(values) do
     table[#table + 1] = v
