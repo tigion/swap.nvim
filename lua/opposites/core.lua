@@ -16,7 +16,10 @@ end
 ---@param cursor opposites.Cursor
 ---@param start_idx integer
 ---@param new_str string
-local function correct_cursor_position(cursor, start_idx, new_str)
+---@param can_outside? boolean The cursor can be outside the new string.
+local function correct_cursor_position(cursor, start_idx, new_str, can_outside)
+  can_outside = can_outside or false
+
   -- Gets the current cursor position.
   local row, col = unpack(vim.api.nvim_win_get_cursor(0))
 
@@ -26,10 +29,12 @@ local function correct_cursor_position(cursor, start_idx, new_str)
 
   -- Corrects the cursor position if it is outside the new string.
   local new_col = cursor.col
-  if new_col < start_col then
-    new_col = start_col
-  elseif new_col > end_col then
-    new_col = end_col
+  if not can_outside then
+    if new_col < start_col then
+      new_col = start_col
+    elseif new_col > end_col then
+      new_col = end_col
+    end
   end
 
   -- Checks if the cursor position has to be changed.
@@ -51,7 +56,8 @@ function M.replace_str_in_current_line(result)
   vim.api.nvim_set_current_line(new_line)
 
   -- Corrects the cursor position.
-  correct_cursor_position(result.cursor, result.start_idx, result.new_str)
+  local cursor_outside = result.opts and result.opts.cursor_outside or false
+  correct_cursor_position(result.cursor, result.start_idx, result.new_str, cursor_outside)
 end
 
 ---Handles the results to replace the string in the current line.

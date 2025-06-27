@@ -5,6 +5,7 @@ local M = {}
 --- | 'opposites'
 --- | 'cases'
 --- | 'chains'
+--- | 'todos'
 ---@alias opposites.ConfigOppositesWords table<string, string>
 ---@alias opposites.ConfigOppositesWordsByFt table<string, opposites.ConfigOppositesWords>
 ---@alias opposites.ConfigCasesId
@@ -51,7 +52,7 @@ local M = {}
 local defaults = {
   max_line_length = 1000,
   all = {
-    modules = { 'opposites', 'cases', 'chains' },
+    modules = { 'opposites', 'cases', 'chains', 'todos' },
   },
   opposites = {
     use_case_sensitive_mask = true,

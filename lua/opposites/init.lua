@@ -6,6 +6,7 @@ local util = require('opposites.util')
 local opposites = require('opposites.opposites')
 local cases = require('opposites.cases')
 local chains = require('opposites.chains')
+local todos = require('opposites.todos')
 
 ---@class opposites
 local M = {}
@@ -19,12 +20,16 @@ local M = {}
 ---@field row integer
 ---@field col integer
 
+---@class opposites.ResultOpts
+---@field cursor_outside? boolean The cursor can be outside the new string.
+
 ---@class opposites.Result
 ---@field str string The found string.
 ---@field new_str string The new string.
 ---@field start_idx integer The start index of the string in the line.
 ---@field cursor opposites.Cursor The cursor position.
 ---@field module string The module name.
+---@field opts? opposites.ResultOpts The options for the result.
 
 ---@alias opposites.Results opposites.Result[]
 
@@ -77,6 +82,9 @@ local function use_module(module, line, cursor, quiet)
   elseif module == 'chains' then
     -- Uses the chains module.
     results = chains.get_results(line, cursor, quiet)
+  elseif module == 'todos' then
+    -- Uses the todos module.
+    results = todos.get_results(line, cursor, quiet)
   end
 
   return results
@@ -112,14 +120,19 @@ M.opposites = {
   switch = function() switch('opposites') end,
 }
 
+-- Chains
+M.chains = {
+  switch = function() switch('chains') end,
+}
+
 -- Cases
 M.cases = {
   switch = function() switch('cases') end,
 }
 
--- Chains
-M.chains = {
-  switch = function() switch('chains') end,
+-- Todos
+M.todos = {
+  switch = function() switch('todos') end,
 }
 
 return M

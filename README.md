@@ -34,8 +34,10 @@ with its opposite word or other supported variants.
 - **Switches between word chains** (see [chains]).
   - e.g. `foo` -> `bar` -> `baz` -> `foo`
   - The word chains can be file type specific.
-- **Switches between naming conventions** (see [cases]).
+- ⚠️ **Switches between naming conventions** (see [cases]).
   - e.g. `foo_bar` -> `fooBar` -> `FooBar` -> `foo_bar`
+- ⚠️ **Switches through the todo states** (see [todos]).
+  - e.g. `- [ ] foo` -> `- [x] foo`
 
 If several results are found, the user is asked which result to switch to.
 
@@ -56,8 +58,9 @@ return {
   keys = {
     { '<Leader>i', function() require('opposites').switch() end, desc = 'Switch word' },
     -- { '<Leader>I', function() require('opposites').opposites.switch() end, desc = 'Switch to opposite word' },
-    -- { '<Leader>I', function() require('opposites').cases.switch() end, desc = 'Switch to next case type' },
     -- { '<Leader>I', function() require('opposites').chains.switch() end, desc = 'Switch to next word' },
+    -- { '<Leader>I', function() require('opposites').cases.switch() end, desc = 'Switch case type' },
+    -- { '<Leader>I', function() require('opposites').todos.switch() end, desc = 'Switch todo state' },
   },
   ---@type opposites.Config
   opts = {},
@@ -66,12 +69,13 @@ return {
 
 ## 🚀 Usage
 
-| Function                                  | Description                                 | Submodule   |
-| ----------------------------------------- | ------------------------------------------- | ----------- |
-| `require('opposites').switch()`           | Uses [all](#switch-all) allowed submodules. |             |
-| `require('opposites').opposites.switch()` | Only switches to the opposite word.         | [opposites] |
-| `require('opposites').chains.switch()`    | Only switches to the next word chain.       | [chains]    |
-| `require('opposites').cases.switch()`     | Only switches to the next case type.        | [cases]     |
+| Function                                  | Description                                   | Submodule   |
+| ----------------------------------------- | --------------------------------------------- | ----------- |
+| `require('opposites').switch()`           | Uses [all](#switch-all) allowed submodules.   |             |
+| `require('opposites').opposites.switch()` | Only switches to the opposite word.           | [opposites] |
+| `require('opposites').chains.switch()`    | Only switches through the word chain words.   | [chains]    |
+| `require('opposites').cases.switch()`     | Only switches through the naming conventions. | [cases]     |
+| `require('opposites').todos.switch()`     | Only switches through the todo states.        | [todos]     |
 
 Call one of the functions directly or use it in a key mapping.
 
@@ -94,18 +98,19 @@ Example:
 ```lua
 opts = {
   all = {
-    modules = { 'opposites', 'cases', 'chains' },
+    modules = { 'opposites', 'cases', 'chains', 'todos' },
   },
 }
 ```
 
 ## 🎁 Submodules
 
-| Submodule   | Description                                 |
-| ----------- | ------------------------------------------- |
-| [opposites] | Switches a word to its opposite word.       |
-| [chains]    | Switches through the words in a word chain. |
-| [cases]     | Switches the naming convention of a word.   |
+| Submodule   | Description                                        |
+| ----------- | -------------------------------------------------- |
+| [opposites] | Switches a word to its opposite word.              |
+| [chains]    | Switches through the words in a word chain.        |
+| [cases]     | Switches through the naming conventions of a word. |
+| [todos]     | Switches through the todo states.                  |
 
 ### 🧩 opposites
 
@@ -201,8 +206,11 @@ opts = {
       { 'foo', 'bar', 'baz', 'qux' },
     },
     words_by_ft = { -- File type specific word chains.
+      asciidoc = {
+        { '[NOTE]', '[TIP]', '[IMPORTANT]', '[WARNING]', '[CAUTION]' }, -- AsciiDoc admonitions
+      },
       markdown = {
-        { '[!NOTE]', '[!TIP]', '[!IMPORTANT]', '[!WARNING]', '[!CAUTION]' }, -- GitHub alerts
+        { '[!NOTE]', '[!TIP]', '[!IMPORTANT]', '[!WARNING]', '[!CAUTION]' }, -- Markdown (GitHub) alerts
       },
     },
   },
@@ -272,6 +280,31 @@ Examples:
 - ✅ `foo_bar`, `foo_bar1`, `foo_bar_baz`
 - ❌ `foo`, `foo_1bar`, `_foo_bar`, `foo_bar_`, `foo_bar-baz`, `foo_bar_Baz`
 
+### 🧩 todos
+
+[todos]: #-todos
+
+> [!WARNING]
+> This feature is experimental and work in progress.
+
+Call `require('opposites').todos.switch()` to switch through the todo states.
+
+Supported filetype specific todo syntaxes:
+
+- [Markdown Task-Lists](https://www.markdownguide.org/extended-syntax/#task-lists):
+  - `- [ ] foo` with the states `[ ]`, `[-]` and `[x]`
+- [AsciiDoc Checklist](https://docs.asciidoctor.org/asciidoc/latest/lists/checklist/):
+  - `* [ ] foo` with the states `[ ]` and `[x]`
+
+Supported default todo syntaxes:
+
+- `- [ ] foo` with the states `[ ]` and `[x]` also within lines and comments
+
+Rules:
+
+- The first match is used.
+- The filetype specific todo syntaxes have priority over the default todo syntaxes.
+
 ## ⚙️ Configuration
 
 The default options are:
@@ -284,6 +317,7 @@ The default options are:
 --- | 'opposites'
 --- | 'cases'
 --- | 'chains'
+--- | 'todos'
 ---@alias opposites.ConfigOppositesWords table<string, string>
 ---@alias opposites.ConfigOppositesWordsByFt table<string, opposites.ConfigOppositesWords>
 ---@alias opposites.ConfigCasesId
@@ -333,7 +367,7 @@ The default options are:
 local defaults = {
   max_line_length = 1000,
   all = {
-    modules = { 'opposites', 'cases', 'chains' },
+    modules = { 'opposites', 'cases', 'chains', 'todos' },
   },
   opposites = {
     use_case_sensitive_mask = true,
@@ -404,9 +438,10 @@ For other plugin manager, call the setup function `require('opposites').setup({
 ## 📋 TODO
 
 - [ ] Limit and check the user configuration.
+- [-] Switch todo states.
 - [x] Support word chains like `{ 'foo', 'bar', 'baz' }`.
 - [x] Refactoring of the code for separate modules like `opposites` and `cases`.
-- [x] Switch naming conventions (case types).
+- [-] Switch naming conventions (case types).
 - [x] Use `vim.ui.select` instead of `vim.fn.inputlist`.
 - [x] Refactoring of the first quickly written code.
 - [x] Adapt the capitalization of the words to reduce words like `true`,
