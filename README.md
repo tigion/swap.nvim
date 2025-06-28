@@ -36,7 +36,7 @@ with its opposite word or other supported variants.
   - The word chains can be file type specific.
 - ⚠️ **Switches between naming conventions** (see [cases]).
   - e.g. `foo_bar` -> `fooBar` -> `FooBar` -> `foo_bar`
-- ⚠️ **Switches through the todo states** (see [todos]).
+- ⚠️ **Switches through todo states** (see [todos]).
   - e.g. `- [ ] foo` -> `- [x] foo`
 
 If several results are found, the user is asked which result to switch to.
@@ -303,6 +303,7 @@ Supported default todo syntaxes:
 
 Rules:
 
+- The cursor can be anywhere in the line.
 - The first match is used.
 - The filetype specific todo syntaxes have priority over the default todo syntaxes.
 
