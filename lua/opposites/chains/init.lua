@@ -1,6 +1,5 @@
 local config = require('opposites.config')
 local notify = require('opposites.notify')
-local util = require('opposites.util')
 
 ---@class opposites.chains
 local M = {}
@@ -11,7 +10,7 @@ local M = {}
 local function get_word_chains()
   local word_chains = vim.deepcopy(config.options.chains.words) or {}
   local word_chains_by_ft = config.options.chains.words_by_ft[vim.bo.filetype]
-  if word_chains_by_ft then util.table.append(word_chains, word_chains_by_ft) end
+  if word_chains_by_ft then vim.list_extend(word_chains, word_chains_by_ft) end
   return word_chains
 end
 

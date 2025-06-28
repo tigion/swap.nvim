@@ -137,7 +137,7 @@ end
 local function get_next_case_type_id(case_type_id)
   -- Gets the allowed case types and exits with nil if there are none.
   local allowed_case_types = get_allowed_case_types()
-  if util.table.length(allowed_case_types) == 0 then return nil end
+  if vim.tbl_count(allowed_case_types) == 0 then return nil end
 
   -- Gets the next case type id.
   local new_case_type_id = next(allowed_case_types, case_type_id)

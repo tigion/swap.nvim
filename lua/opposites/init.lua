@@ -1,7 +1,6 @@
 local config = require('opposites.config')
 local notify = require('opposites.notify')
 local core = require('opposites.core')
-local util = require('opposites.util')
 
 local opposites = require('opposites.opposites')
 local cases = require('opposites.cases')
@@ -60,7 +59,7 @@ local function use_module(module, line, cursor, quiet)
     local allowed_modules = config.options.all.modules or {}
     for _, m in ipairs(allowed_modules) do
       local module_results = use_module(m, line, cursor, true)
-      if module_results ~= nil then util.table.append(results, module_results) end
+      if module_results ~= nil then vim.list_extend(results, module_results) end
     end
     if #results < 1 then
       -- No results found.
