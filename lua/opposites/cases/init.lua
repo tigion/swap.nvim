@@ -84,8 +84,8 @@ local cases = {
 --
 ---@param line string The line string to search in.
 ---@param col integer The cursors column position.
----@return integer|nil # The start index of the word or nil.
----@return string|nil # The word or nil if not found.
+---@return integer? # The start index of the word or nil.
+---@return string? # The word or nil if not found.
 local function find_word_in_line(line, col)
   local pattern = '[a-zA-Z0-9_-]+'
   local start_idx, end_idx
@@ -133,7 +133,7 @@ end
 
 ---Gets the next available case type id.
 ---@param case_type_id string
----@return string|nil
+---@return string?
 local function get_next_case_type_id(case_type_id)
   -- Gets the allowed case types and exits with nil if there are none.
   local allowed_case_types = get_allowed_case_types()

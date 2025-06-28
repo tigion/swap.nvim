@@ -28,7 +28,7 @@ end
 ---or nil if not found.
 ---@param table table
 ---@param value any
----@return integer|nil
+---@return integer?
 function M.table.find(table, value)
   for i, v in ipairs(table) do
     if v == value then return i end
