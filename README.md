@@ -275,6 +275,8 @@ opts = {
 - Underscores and dashes are only allowed between the word parts.
 - Words must be at least 2 parts long.
 - No mixed case types.
+- No support of abbreviations in capital letters for camelCase and PascalCase
+  (e.g. ✅ `fooJson`, ❌ `fooJSON`, ✅ `userId`, ❌ `userID`).
 
 Examples:
 
