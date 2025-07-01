@@ -8,6 +8,8 @@ local M = {}
 --- | 'todos'
 ---@alias opposites.ConfigOppositesWords table<string, string>
 ---@alias opposites.ConfigOppositesWordsByFt table<string, opposites.ConfigOppositesWords>
+---@alias opposites.ConfigChainsWords string[][]
+---@alias opposites.ConfigChainsWordsByFt table<string, opposites.ConfigChainsWords>
 ---@alias opposites.ConfigCasesId
 --- | 'snake' snake_case
 --- | 'screaming_snake' SCREAMING_SNAKE_CASE
@@ -16,8 +18,6 @@ local M = {}
 --- | 'camel' camelCase
 --- | 'pascal' PascalCase
 ---@alias opposites.ConfigCasesTypes opposites.ConfigCasesId[]
----@alias opposites.ConfigChainsWords string[][]
----@alias opposites.ConfigChainsWordsByFt table<string, opposites.ConfigChainsWords>
 
 ---@class opposites.ConfigAll
 ---@field modules? opposites.ConfigModule[] The default submodules to use.
@@ -29,13 +29,13 @@ local M = {}
 ---@field words? opposites.ConfigOppositesWords The words with their opposite words.
 ---@field words_by_ft? opposites.ConfigOppositesWordsByFt The file type specific words with their opposite words.
 
----@class opposites.ConfigCases
----@field types? opposites.ConfigCasesTypes The allowed case types to parse.
-
 ---@class opposites.ConfigChains
 ---@field use_case_sensitive_mask? boolean Whether to use a case sensitive mask.
 ---@field words? opposites.ConfigChainsWords The word chains to search for.
 ---@field words_by_ft? opposites.ConfigChainsWordsByFt The file type specific word chains to search for.
+
+---@class opposites.ConfigCases
+---@field types? opposites.ConfigCasesTypes The allowed case types to parse.
 
 ---@class opposites.ConfigNotify
 ---@field found? boolean Whether to notify when a word is found.
@@ -81,6 +81,11 @@ local defaults = {
       },
     },
   },
+  chains = {
+    use_case_sensitive_mask = true,
+    words = {}, -- Empty by default. Will be overwritten by the user configuration.
+    words_by_ft = {}, -- Empty by default. Will be overwritten by the user configuration.
+  },
   cases = {
     types = {
       'snake',
@@ -90,11 +95,6 @@ local defaults = {
       'camel',
       'pascal',
     },
-  },
-  chains = {
-    use_case_sensitive_mask = true,
-    words = {}, -- Empty by default. Will be overwritten by the user configuration.
-    words_by_ft = {}, -- Empty by default. Will be overwritten by the user configuration.
   },
   notify = {
     found = false,
