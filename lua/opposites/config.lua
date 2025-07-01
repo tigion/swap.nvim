@@ -33,6 +33,7 @@ local M = {}
 ---@field types? opposites.ConfigCasesTypes The allowed case types to parse.
 
 ---@class opposites.ConfigChains
+---@field use_case_sensitive_mask? boolean Whether to use a case sensitive mask.
 ---@field words? opposites.ConfigChainsWords The word chains to search for.
 ---@field words_by_ft? opposites.ConfigChainsWordsByFt The file type specific word chains to search for.
 
@@ -91,6 +92,7 @@ local defaults = {
     },
   },
   chains = {
+    use_case_sensitive_mask = true,
     words = {}, -- Empty by default. Will be overwritten by the user configuration.
     words_by_ft = {}, -- Empty by default. Will be overwritten by the user configuration.
   },

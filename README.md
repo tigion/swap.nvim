@@ -27,12 +27,14 @@ Finds a word or string under the cursor and replaces it
 with its opposite word or other supported variants.
 
 - **Switches between opposite words** (see [opposites]).
-  - e.g. `enable` -> `disable`
+  - e.g. `true` -> `false`
   - Adapts the capitalization of the replaced word.
     - e.g. `true`, `True`, `TRUE` -> `false`, `False`, `FALSE`.
   - The opposite words can be file type specific.
 - **Switches between word chains** (see [chains]).
   - e.g. `foo` -> `bar` -> `baz` -> `foo`
+  - Adapts the capitalization of the replaced word.
+    - e.g. `foo`, `Foo`, `FOO` -> `bar`, `Bar`, `BAR`.
   - The word chains can be file type specific.
 - ⚠️ **Switches between naming conventions** (see [cases]).
   - e.g. `foo_bar` -> `fooBar` -> `FooBar` -> `foo_bar`
@@ -223,6 +225,10 @@ Rules:
 - The word chains must be at least 2 words long.
 - The word chains should not contain the same word more than once.
 
+> [!NOTE]
+> Flexible word recognition can be used to avoid having to configure every
+> variant of capitalization. Activated by default. See [Case Sensitive Mask](#-case-sensitive-mask).
+
 ### 🧩 cases
 
 [cases]: #-cases
@@ -349,6 +355,7 @@ The default options are:
 ---@field types? opposites.ConfigCasesTypes The allowed case types to parse.
 
 ---@class opposites.ConfigChains
+---@field use_case_sensitive_mask? boolean Whether to use a case sensitive mask.
 ---@field words? opposites.ConfigChainsWords The word chains to search for.
 ---@field words_by_ft? opposites.ConfigChainsWordsByFt The file type specific word chains to search for.
 
@@ -410,6 +417,7 @@ local defaults = {
     },
   },
   chains = {
+    use_case_sensitive_mask = true,
     words = {},
     words_by_ft = {},
   },
