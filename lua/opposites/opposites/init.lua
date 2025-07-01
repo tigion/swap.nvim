@@ -1,7 +1,6 @@
 local config = require('opposites.config')
 local notify = require('opposites.notify')
-
-local opposites_util = require('opposites.opposites.util')
+local util = require('opposites.util')
 
 ---@class opposites.opposites
 local M = {}
@@ -52,7 +51,7 @@ local function find_results(line, cursor)
       -- the word or the opposite word contains no uppercase letters.
       if
         config.options.opposites.use_case_sensitive_mask
-        and not (opposites_util.has_uppercase(word) or opposites_util.has_uppercase(opposite_word))
+        and not (util.mask.has_uppercase(word) or util.mask.has_uppercase(opposite_word))
       then
         use_mask = true
       end
@@ -63,8 +62,8 @@ local function find_results(line, cursor)
         if use_mask then
           -- Gets the original word.
           word = string.sub(line, idx, idx + #word - 1)
-          local mask = opposites_util.get_case_sensitive_mask(word)
-          opposite_word = opposites_util.apply_case_sensitive_mask(opposite_word, mask)
+          local mask = util.mask.get_case_sensitive_mask(word)
+          opposite_word = util.mask.apply_case_sensitive_mask(opposite_word, mask)
         end
 
         -- Adds the result to the results list.

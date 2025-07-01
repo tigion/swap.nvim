@@ -1,7 +1,6 @@
 local config = require('opposites.config')
 local notify = require('opposites.notify')
-
-local opposites_util = require('opposites.opposites.util')
+local util = require('opposites.util')
 
 ---@class opposites.chains
 local M = {}
@@ -21,7 +20,7 @@ end
 ---@return boolean
 local function has_uppercase_words(word_chain)
   for _, word in ipairs(word_chain) do
-    if opposites_util.has_uppercase(word) then return true end
+    if util.mask.has_uppercase(word) then return true end
   end
   return false
 end
@@ -63,8 +62,8 @@ local function find_results(line, cursor)
           if use_mask then
             -- Gets the original word.
             word = string.sub(line, start_idx, start_idx + #word - 1)
-            local mask = opposites_util.get_case_sensitive_mask(word)
-            next_word = opposites_util.apply_case_sensitive_mask(next_word, mask)
+            local mask = util.mask.get_case_sensitive_mask(word)
+            next_word = util.mask.apply_case_sensitive_mask(next_word, mask)
           end
 
           -- Adds the result to the results list.
