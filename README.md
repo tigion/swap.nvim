@@ -3,17 +3,19 @@
 A [Neovim](https://neovim.io/) plugin to quickly **swap** (_switch_, _change_)
 a **word** (_string_) under the cursor or a **pattern** in the current line.
 For example, if the cursor is on `enable` it will switch to `disable` and vice
-versa (see [Features](#-features)).
+versa (see [Features](#features)).
 
 > [!WARNING]
 > This plugin is based on my personal needs. Work in progress. 🚀
 
 > [!CAUTION]
 > **BREAKING CHANGES** (2025-07-03): The name has changed.
->   - The repo name has changed from `nvim-opposites` to `swap.nvim`.
->   - The plugin module name has changed from `opposites` to `swap`.
 >
-> More information and older notes can be found in the [Changes](#️-breaking-changes) section.
+> - The repo name has changed from `nvim-opposites` to `swap.nvim`.
+> - The plugin module name has changed from `opposites` to `swap`.
+>
+> More information and older notes can be found in the
+> [Changes](#️-breaking-changes) section.
 
 Other similar or better plugins are:
 
@@ -22,18 +24,18 @@ Other similar or better plugins are:
 
 **Table of Contents**:
 
-- [Features](#-features)
-- [Requirements](#️-requirements)
-- [Installation](#-installation)
-- [Usage](#-usage)
-- [Modules](#-modules):
-  [opposites](#-opposites), [chains](#-chains), [cases](#-cases), [todos](#-todos)
-- [Configuration](#️-configuration):
+- [Features](#features)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Modules](#modules):
+  [opposites](#opposites), [chains](#chains), [cases](#cases), [todos](#todos)
+- [Configuration](#configuration):
   [Default Options](#default-options)
-- [Notes](#-notes):
+- [Notes](#notes):
   [Case Sensitive Mask](#case-sensitive-mask)
 - ‼️ [Breaking Changes](#️-breaking-changes)
-- [Todo](#-todo)
+- [Todo](#todo)
 
 &nbsp;
 
@@ -97,13 +99,13 @@ Call the functions directly or use them in a key mapping.
 vim.keymap.set('n', '<Leader>i', require('swap').switch, { desc = 'Swap word' })
 ```
 
-See the [configuration](#️-configuration) section for the available default
-options and the [modules](#-modules) section for configuration examples.
+See the [configuration](#configuration) section for the available default
+options and the [modules](#modules) section for configuration examples.
 
 ### Configure allowed modules
 
 Call `require(‘swap’).switch()` to change the word (string) under the cursor or
-the pattern in the current line to one of the allowed [modules](#-modules) in
+the pattern in the current line to one of the allowed [modules](#modules) in
 the `all.modules` table.
 
 Example:
@@ -132,7 +134,7 @@ opts = {
 
 ### Opposites
 
-[opposites]: #-opposites
+[opposites]: #opposites
 
 Call `require('swap').opposites.switch()` to switch to the opposite word
 or string under the cursor. The found string can also be a part of a word.
@@ -177,7 +179,7 @@ opts = {
 
 ### Chains
 
-[chains]: #-chains
+[chains]: #chains
 
 Call `require(‘opposites’).chains.switch()` to switch to the next word or
 string in a word chain under the cursor. The found string can also be a part of
@@ -227,7 +229,7 @@ Rules:
 
 ### Cases
 
-[cases]: #-cases
+[cases]: #cases
 
 > [!WARNING]
 > This feature is experimental and work in progress.
@@ -288,7 +290,7 @@ Examples:
 
 ### Todos
 
-[todos]: #-todos
+[todos]: #todos
 
 > [!WARNING]
 > This feature is work in progress.
@@ -480,13 +482,13 @@ Example with `['enable'] = 'Disable'`:
   - `require('opposites').opposites.switch()` is now only for switching to the
     opposite word.
   - `require('opposites').cases.next()` is now `require('opposites').cases.switch()`
-  - See the [Usage](#-usage) section.
+  - See the [Usage](#usage) section.
 
 - **2025-06-19**: The configuration has changed.
   - Options for the opposites are now in the `opposites` table.
   - The `opposites` and `opposites_by_ft` tables are now renamed to `words` and
     `words_by_ft`.
-  - See the [Configuration](#️-configuration) section.
+  - See the [Configuration](#configuration) section.
 
 &nbsp;
 
