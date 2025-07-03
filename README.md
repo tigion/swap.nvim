@@ -24,7 +24,7 @@ Other similar or better plugins are:
 - [nguyenvukhang/nvim-toggler](https://github.com/nguyenvukhang/nvim-toggler)
 - [AndrewRadev/switch.vim](https://github.com/AndrewRadev/switch.vim)
 
-**Table of Contents**
+**Table of Contents**:
 
 - ✨ [Features](#-features)
 - ⚡️ [Requirements](#️-requirements)
@@ -34,7 +34,7 @@ Other similar or better plugins are:
   - 🧩 [opposites](#-opposites), [chains](#-chains), [cases](#-cases), [todos](#-todos)
 - ⚙️ [Configuration](#️-configuration)
   - [Default Options](#default-options)
-- 📘 [Notes](#notes)
+- 📘 [Notes](#-notes)
   - [Case Sensitive Mask](#case-sensitive-mask)
 - ‼️ [Breaking Changes](#️-breaking-changes)
 - 📋 [TODO](#-todo)
@@ -171,7 +171,8 @@ opts = {
 
 > [!NOTE]
 > Flexible word recognition can be used to avoid having to configure every
-> variant of capitalization. Activated by default. See [Case Sensitive Mask](#case-sensitive-mask).
+> variant of capitalization. Activated by default.
+> See [Case Sensitive Mask](#case-sensitive-mask).
 
 > [!TIP]
 > It doesn't have to be opposites words that are exchanged (e.g. `['Vim'] = 'Neovim'`).
@@ -223,7 +224,8 @@ Rules:
 
 > [!NOTE]
 > Flexible word recognition can be used to avoid having to configure every
-> variant of capitalization. Activated by default. See [Case Sensitive Mask](#case-sensitive-mask).
+> variant of capitalization. Activated by default.
+> See [Case Sensitive Mask](#case-sensitive-mask).
 
 &nbsp;
 
@@ -273,7 +275,8 @@ opts = {
 
 #### Limits
 
-- Identifies only words with alphanumeric characters, underscores and dashes (`a-zA-Z0-9_-`).
+- Identifies only words with alphanumeric characters, underscores and dashes
+  (`a-zA-Z0-9_-`).
 - Word parts must start with a letter.
 - Numbers are only allowed at the end of the word parts.
 - Underscores and dashes are only allowed between the word parts.
@@ -319,9 +322,9 @@ Rules:
 
 ## ⚙️ Configuration
 
-In [lazy.nvim], use the table `opts = {}` for your own configuration. For other plugin
-manager, call the setup function `require('swap').setup({})` with the provided
-options in `{}` directly.
+In [lazy.nvim], use the table `opts = {}` for your own configuration. For other
+plugin manager, call the setup function `require('swap').setup({})` with the
+provided options in `{}` directly.
 
 ### Default Options
 
@@ -449,8 +452,8 @@ Rules:
 
 - If the found word is uppercase, the mask is upper case.
 - If the found word is lowercase, the mask is lower case.
-- If the found word is mixed case, the mask is a string to represent the case. Longer
-  words are masked at the end with lower case letters.
+- If the found word is mixed case, the mask is a string to represent the case.
+  Longer words are masked at the end with lower case letters.
 
 Deactivate this behavior by setting `use_case_sensitive_mask = false` in the
 module options.
