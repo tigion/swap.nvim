@@ -1,9 +1,9 @@
-# nvim-opposites
+# swap.nvim
 
-A [Neovim](https://neovim.io/) plugin to quickly switch the word under the
-cursor to its opposite word or other supported variants.  
-For example, if the cursor is on `enable` it will
-switch to `disable` and vice versa.
+A [Neovim](https://neovim.io/) plugin to quickly **swap** (_switch_, _change_)
+a **word** (_string_) under the cursor or a **pattern** in the current line.
+For example, if the cursor is on `enable` it will switch to `disable` and vice
+versa (see [Features](#-features)).
 
 > [!WARNING]
 > This plugin is based on my personal needs. Work in progress. 🚀
@@ -11,6 +11,9 @@ switch to `disable` and vice versa.
 > [!CAUTION]
 > BREAKING CHANGES
 >
+> - **2025-07-03**: The name has changed.
+>   - The repo name has changed from `nvim-opposites` to `swap.nvim`.
+>   - The plugin module name has changed from `opposites` to `swap`.
 > - 2025-06-24: The functions have changed.
 > - 2025-06-19: The configuration has changed.
 >
@@ -21,21 +24,32 @@ Other similar or better plugins are:
 - [nguyenvukhang/nvim-toggler](https://github.com/nguyenvukhang/nvim-toggler)
 - [AndrewRadev/switch.vim](https://github.com/AndrewRadev/switch.vim)
 
-## ✨ Features
+**Table of Contents**
 
-Finds a word or string under the cursor and replaces it
-with its opposite word or other supported variants.
+- ✨ [Features](#-features)
+- ⚡️ [Requirements](#️-requirements)
+- 📦 [Installation](#-installation)
+- 🚀 [Usage](#-usage)
+- 🎁 [Modules](#-modules)
+  - 🧩 [opposites](#-opposites), [chains](#-chains), [cases](#-cases), [todos](#-todos)
+- ⚙️ [Configuration](#️-configuration)
+  - [Default Options](#default-options)
+- 📘 [Notes](#notes)
+  - [Case Sensitive Mask](#case-sensitive-mask)
+- ‼️ [Breaking Changes](#️-breaking-changes)
+- 📋 [TODO](#-todo)
+
+&nbsp;
+
+## ✨ Features
 
 - **Switches between opposite words** (see [opposites]).
   - e.g. `true` -> `false`
   - Adapts the capitalization of the replaced word.
-    - e.g. `true`, `True`, `TRUE` -> `false`, `False`, `FALSE`.
-  - The opposite words can be file type specific.
-- **Switches between word chains** (see [chains]).
+    - e.g. `true`, `True`, `tRUe`, `TRUE` -> `false`, `False`, `fALse`, `FALSE`.
+- **Switches through word chains** (see [chains]).
   - e.g. `foo` -> `bar` -> `baz` -> `foo`
   - Adapts the capitalization of the replaced word.
-    - e.g. `foo`, `Foo`, `FOO` -> `bar`, `Bar`, `BAR`.
-  - The word chains can be file type specific.
 - ⚠️ **Switches between naming conventions** (see [cases]).
   - e.g. `foo_bar` -> `fooBar` -> `FooBar` -> `foo_bar`
 - ⚠️ **Switches through todo states** (see [todos]).
@@ -55,45 +69,46 @@ If several results are found, the user is asked which result to switch to.
 
 ```lua
 return {
-  'tigion/nvim-opposites',
+  'tigion/swap.nvim',
   -- event = { 'BufReadPost', 'BufNewFile' },
   keys = {
-    { '<Leader>i', function() require('opposites').switch() end, desc = 'Switch word' },
-    -- { '<Leader>I', function() require('opposites').opposites.switch() end, desc = 'Switch to opposite word' },
-    -- { '<Leader>I', function() require('opposites').chains.switch() end, desc = 'Switch to next word' },
-    -- { '<Leader>I', function() require('opposites').cases.switch() end, desc = 'Switch case type' },
-    -- { '<Leader>I', function() require('opposites').todos.switch() end, desc = 'Switch todo state' },
+    { '<Leader>i', function() require('swap').switch() end, desc = 'Swap word' },
+    -- { '<Leader>I', function() require('swap').opposites.switch() end, desc = 'Swap to opposite word' },
+    -- { '<Leader>I', function() require('swap').chains.switch() end, desc = 'Swap to next word' },
+    -- { '<Leader>I', function() require('swap').cases.switch() end, desc = 'Swap naming convention' },
+    -- { '<Leader>I', function() require('swap').todos.switch() end, desc = 'Swap todo state' },
   },
-  ---@type opposites.Config
+  ---@type swap.Config
   opts = {},
 }
 ```
 
+&nbsp;
+
 ## 🚀 Usage
 
-| Function                                  | Description                                   | Submodule   |
-| ----------------------------------------- | --------------------------------------------- | ----------- |
-| `require('opposites').switch()`           | Uses [all](#switch-all) allowed submodules.   |             |
-| `require('opposites').opposites.switch()` | Only switches to the opposite word.           | [opposites] |
-| `require('opposites').chains.switch()`    | Only switches through the word chain words.   | [chains]    |
-| `require('opposites').cases.switch()`     | Only switches through the naming conventions. | [cases]     |
-| `require('opposites').todos.switch()`     | Only switches through the todo states.        | [todos]     |
+| Function                             | Description                                                     | Module      |
+| ------------------------------------ | --------------------------------------------------------------- | ----------- |
+| `require('swap').switch()`           | Uses all allowed modules ([config](#configure-allowed-modules)) |             |
+| `require('swap').opposites.switch()` | Switches between opposite words                                 | [opposites] |
+| `require('swap').chains.switch()`    | Switches through word chains                                    | [chains]    |
+| `require('swap').cases.switch()`     | Switches between naming conventions                             | [cases]     |
+| `require('swap').todos.switch()`     | Switches through todo states                                    | [todos]     |
 
-Call one of the functions directly or use it in a key mapping.
+Call the functions directly or use them in a key mapping.
 
 ```lua
-vim.keymap.set('n', '<Leader>i', require('opposites').switch, { desc = 'Switch word' })
+vim.keymap.set('n', '<Leader>i', require('swap').switch, { desc = 'Swap word' })
 ```
 
-See the [Configuration](#️-configuration) section for the default options.
+See the [configuration](#️-configuration) section for the available default
+options and the [modules](#-modules) section for configuration examples.
 
-### Switch All
+### Configure allowed modules
 
-Call `require('opposites').switch()` to switch to a supported variant of the
-word/string under the cursor. Supported variants are all allowed [submodules](#-submodules).
-
-The allowed submodules can be configured in the `all.modules` table in the
-`opposites.Config` table.
+Call `require(‘swap’).switch()` to change the word (string) under the cursor or
+the pattern in the current line to one of the allowed [modules](#-modules) in
+the `all.modules` table.
 
 Example:
 
@@ -101,29 +116,33 @@ Example:
 opts = {
   all = {
     -- modules = { 'opposites', 'chains' }, -- defaults
-    modules = { 'opposites', 'chains', 'cases', 'todos' }, -- all modules
+    modules = { 'opposites', 'chains', 'cases', 'todos' },
   },
 }
 ```
 
-## 🎁 Submodules
+&nbsp;
 
-| Submodule   | Description                                        |
-| ----------- | -------------------------------------------------- |
-| [opposites] | Switches a word to its opposite word.              |
-| [chains]    | Switches through the words in a word chain.        |
-| [cases]     | Switches through the naming conventions of a word. |
-| [todos]     | Switches through the todo states.                  |
+## 🎁 Modules
 
-### 🧩 opposites
+| Module      | Description                         |
+| ----------- | ----------------------------------- |
+| [opposites] | Switches between opposite words     |
+| [chains]    | Switches through word chains        |
+| [cases]     | Switches between naming conventions |
+| [todos]     | Switches through todo states        |
+
+&nbsp;
+
+### 🧩 Opposites
 
 [opposites]: #-opposites
 
-Call `require('opposites').opposites.switch()` to switch to the opposite word
+Call `require('swap').opposites.switch()` to switch to the opposite word
 or string under the cursor. The found string can also be a part of a word.
 
 For more own defined words, add them to the `words` or `words_by_ft` table in
-the `opposites` part of the `opposites.Config` table.
+the `opposites` part of the `swap.Config` table.
 
 If `use_default_words` and `use_default_words_by_ft` is set to `false`, only
 the user defined words will be used.
@@ -150,40 +169,16 @@ opts = {
 }
 ```
 
+> [!NOTE]
+> Flexible word recognition can be used to avoid having to configure every
+> variant of capitalization. Activated by default. See [Case Sensitive Mask](#case-sensitive-mask).
+
 > [!TIP]
 > It doesn't have to be opposites words that are exchanged (e.g. `['Vim'] = 'Neovim'`).
 
-#### Case Sensitive Mask
+&nbsp;
 
-Flexible word recognition can be used to avoid having to configure every
-variant of capitalization. Activated by default.
-This means that variants with capital letters are also found for lower-case
-words and the replaced opposite word adapts the capitalization.
-
-Rules:
-
-- If the word is uppercase, the mask is upper case.
-- If the word is lowercase, the mask is lower case.
-- If the word is mixed case, the mask is a string to represent the case. Longer
-  words are masked at the end with lower case letters.
-
-Deactivate this behavior by setting `use_case_sensitive_mask = false`.
-
-> [!IMPORTANT]
-> If a configured word or his opposite word contains capital letters, then for
-> this words no mask is used.
-
-Example with `['enable'] = 'disable'`:
-
-- found: `enable`, `Enable`, `EnAbLe` and `ENABLE`
-- replaced with: `disable`, `Disable`, `diSAble` and `DISABLE`
-
-Example with `['enable'] = 'Disable'`:
-
-- found: `enable`
-- replaced with: `Disable`
-
-### 🧩 chains
+### 🧩 Chains
 
 [chains]: #-chains
 
@@ -197,7 +192,7 @@ Examples:
 - `foo` -> `bar` -> `baz` -> `qux` -> `foo`
 
 The word chains are defined in the `words` and `words_by_ft` tables in
-the `chains` part of the `opposites.Config` table.
+the `chains` part of the `swap.Config` table.
 
 Example:
 
@@ -210,7 +205,8 @@ opts = {
     },
     words_by_ft = { -- File type specific word chains.
       asciidoc = {
-        { '[NOTE]', '[TIP]', '[IMPORTANT]', '[WARNING]', '[CAUTION]' }, -- AsciiDoc admonitions
+        { '[NOTE]', '[TIP]', '[IMPORTANT]', '[WARNING]', '[CAUTION]' }, -- AsciiDoc admonitions (block)
+        { 'NOTE:', 'TIP:', 'IMPORTANT:', 'WARNING:', 'CAUTION:' }, -- AsciiDoc admonitions (line)
       },
       markdown = {
         { '[!NOTE]', '[!TIP]', '[!IMPORTANT]', '[!WARNING]', '[!CAUTION]' }, -- Markdown (GitHub) alerts
@@ -227,9 +223,11 @@ Rules:
 
 > [!NOTE]
 > Flexible word recognition can be used to avoid having to configure every
-> variant of capitalization. Activated by default. See [Case Sensitive Mask](#-case-sensitive-mask).
+> variant of capitalization. Activated by default. See [Case Sensitive Mask](#case-sensitive-mask).
 
-### 🧩 cases
+&nbsp;
+
+### 🧩 Cases
 
 [cases]: #-cases
 
@@ -237,7 +235,7 @@ Rules:
 > This feature is experimental and work in progress.
 > The word identification is very limited.
 
-Call `require('opposites').cases.switch()` to switch to the next case type of the
+Call `require('swap').cases.switch()` to switch to the next case type of the
 word under the cursor.
 
 Example:
@@ -254,7 +252,7 @@ Supported case types are:
 - PascalCase
 
 The allowed case types and the switch order can be configured in the `types`
-table in the `cases` part of the `opposites.Config` table.
+table in the `cases` part of the `swap.Config` table.
 
 Example:
 
@@ -289,14 +287,16 @@ Examples:
 - ✅ `foo_bar`, `foo_bar1`, `foo_bar_baz`
 - ❌ `foo`, `foo_1bar`, `_foo_bar`, `foo_bar_`, `foo_bar-baz`, `foo_bar_Baz`
 
-### 🧩 todos
+&nbsp;
+
+### 🧩 Todos
 
 [todos]: #-todos
 
 > [!WARNING]
 > This feature is experimental and work in progress.
 
-Call `require('opposites').todos.switch()` to switch through the todo states.
+Call `require('swap').todos.switch()` to switch through the todo states.
 
 Supported filetype specific todo syntaxes:
 
@@ -315,66 +315,72 @@ Rules:
 - The first match is used.
 - The filetype specific todo syntaxes have priority over the default todo syntaxes.
 
+&nbsp;
+
 ## ⚙️ Configuration
 
-The default options are:
+In [lazy.nvim], use the table `opts = {}` for your own configuration. For other plugin
+manager, call the setup function `require('swap').setup({})` with the provided
+options in `{}` directly.
+
+### Default Options
 
 <details>
-  <summary>Show annotations and descriptions of the configuration</summary>
+  <summary>Show annotations and descriptions</summary>
 
 ```lua
----@alias opposites.ConfigModule
+---@alias swap.ConfigModule
 --- | 'opposites'
 --- | 'cases'
 --- | 'chains'
 --- | 'todos'
----@alias opposites.ConfigOppositesWords table<string, string>
----@alias opposites.ConfigOppositesWordsByFt table<string, opposites.ConfigOppositesWords>
----@alias opposites.ConfigChainsWords string[][]
----@alias opposites.ConfigChainsWordsByFt table<string, opposites.ConfigChainsWords>
----@alias opposites.ConfigCasesId
+---@alias swap.ConfigOppositesWords table<string, string>
+---@alias swap.ConfigOppositesWordsByFt table<string, swap.ConfigOppositesWords>
+---@alias swap.ConfigChainsWords string[][]
+---@alias swap.ConfigChainsWordsByFt table<string, swap.ConfigChainsWords>
+---@alias swap.ConfigCasesId
 --- | 'snake' snake_case
 --- | 'screaming_snake' SCREAMING_SNAKE_CASE
 --- | 'kebab' kebab-case
 --- | 'screaming_kebab' SCREAMING-KEBAB-CASE
 --- | 'camel' camelCase
 --- | 'pascal' PascalCase
----@alias opposites.ConfigCasesTypes opposites.ConfigCasesId[]
+---@alias swap.ConfigCasesTypes swap.ConfigCasesId[]
 
----@class opposites.ConfigAll
----@field modules? opposites.ConfigModule[] The default submodules to use.
+---@class swap.ConfigAll
+---@field modules? swap.ConfigModule[] The default modules to use.
 
----@class opposites.ConfigOpposites
+---@class swap.ConfigOpposites
 ---@field use_case_sensitive_mask? boolean Whether to use a case sensitive mask.
 ---@field use_default_words? boolean Whether to use the default opposites.
----@field use_default_words_by_ft? boolean Whether to use the default opposites.
----@field words? opposites.ConfigOppositesWords The words with their opposite words.
----@field words_by_ft? opposites.ConfigOppositesWordsByFt The file type specific words with their opposite words.
+---@field use_default_words_by_ft? boolean Whether to use the default opposites by file type.
+---@field words? swap.ConfigOppositesWords The words with their opposite words.
+---@field words_by_ft? swap.ConfigOppositesWordsByFt The file type specific words with their opposite words.
 
----@class opposites.ConfigChains
+---@class swap.ConfigChains
 ---@field use_case_sensitive_mask? boolean Whether to use a case sensitive mask.
----@field words? opposites.ConfigChainsWords The word chains to search for.
----@field words_by_ft? opposites.ConfigChainsWordsByFt The file type specific word chains to search for.
+---@field words? swap.ConfigChainsWords The word chains to search for.
+---@field words_by_ft? swap.ConfigChainsWordsByFt The file type specific word chains to search for.
 
----@class opposites.ConfigCases
----@field types? opposites.ConfigCasesTypes The allowed case types to parse.
+---@class swap.ConfigCases
+---@field types? swap.ConfigCasesTypes The allowed case types to parse.
 
----@class opposites.ConfigNotify
+---@class swap.ConfigNotify
 ---@field found? boolean Whether to notify when a word is found.
 ---@field not_found? boolean Whether to notify when no word is found.
 
----@class opposites.Config
+---@class swap.Config
 ---@field max_line_length? integer The maximum line length to search.
----@field opposites? opposites.ConfigOpposites The options for the opposites.
----@field cases? opposites.ConfigCases The options for the cases.
----@field chains? opposites.ConfigChains The options for the chains.
----@field notify? opposites.ConfigNotify The notifications to show.
+---@field opposites? swap.ConfigOpposites The options for the opposites.
+---@field cases? swap.ConfigCases The options for the cases.
+---@field chains? swap.ConfigChains The options for the chains.
+---@field notify? swap.ConfigNotify The notifications to show.
 ```
 
 </details>
 
 ```lua
----@type opposites.Config
+---@type swap.Config
 local defaults = {
   max_line_length = 1000,
   all = {
@@ -428,10 +434,48 @@ local defaults = {
 }
 ```
 
-For other plugin manager, call the setup function `require('opposites').setup({
-  ... })` directly.
+&nbsp;
+
+## 📘 Notes
+
+### Case Sensitive Mask
+
+Flexible word recognition can be used to avoid having to configure every
+variant of capitalization. This means that variants with capital letters are
+also found for configured lower-case words and the replaced opposite word
+adapts the capitalization.
+
+Rules:
+
+- If the found word is uppercase, the mask is upper case.
+- If the found word is lowercase, the mask is lower case.
+- If the found word is mixed case, the mask is a string to represent the case. Longer
+  words are masked at the end with lower case letters.
+
+Deactivate this behavior by setting `use_case_sensitive_mask = false` in the
+module options.
+
+> [!IMPORTANT]
+> If a configured word or his opposite word contains capital letters, then for
+> this words no mask is used.
+
+Example with `['enable'] = 'disable'`:
+
+- found: `enable`, `Enable`, `EnAbLe` and `ENABLE`
+- replaced with: `disable`, `Disable`, `diSAble` and `DISABLE`
+
+Example with `['enable'] = 'Disable'`:
+
+- found: `enable`
+- replaced with: `Disable`
+
+&nbsp;
 
 ## ‼️ Breaking Changes
+
+- **2025-07-03**: The name has changed.
+  - The repo name has changed from `nvim-opposites` to `swap.nvim`.
+  - The plugin module name has changed from `opposites` to `swap`.
 
 - **2025-06-24**: The functions have changed.
   - The default behavior of `require('opposites').switch()` is now to switch to
@@ -447,13 +491,16 @@ For other plugin manager, call the setup function `require('opposites').setup({
     `words_by_ft`.
   - See the [Configuration](#️-configuration) section.
 
+&nbsp;
+
 ## 📋 TODO
 
 - [ ] Limit and check the user configuration.
-- [-] Switch todo states.
+- [x] Change the plugin name to `swap.nvim`.
+- [x] Switch todo states.
 - [x] Support word chains like `{ 'foo', 'bar', 'baz' }`.
 - [x] Refactoring of the code for separate modules like `opposites` and `cases`.
-- [-] Switch naming conventions (case types).
+- [x] Switch naming conventions (case types).
 - [x] Use `vim.ui.select` instead of `vim.fn.inputlist`.
 - [x] Refactoring of the first quickly written code.
 - [x] Adapt the capitalization of the words to reduce words like `true`,

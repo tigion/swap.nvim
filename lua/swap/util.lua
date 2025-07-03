@@ -1,4 +1,4 @@
----@class opposites.util
+---@class swap.util
 local M = {}
 
 M.mask = {}

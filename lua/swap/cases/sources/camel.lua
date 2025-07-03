@@ -1,7 +1,7 @@
----@type opposites.ConfigCasesId
+---@type swap.ConfigCasesId
 local id = 'camel'
 
----@type opposites.CasesSource
+---@type swap.CasesSource
 local M = {
   id = id,
   name = 'camelCase',

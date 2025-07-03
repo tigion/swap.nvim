@@ -1,19 +1,19 @@
----@type opposites.ConfigCasesId
-local id = 'snake'
+---@type swap.ConfigCasesId
+local id = 'kebab'
 
----@type opposites.CasesSource
+---@type swap.CasesSource
 local M = {
   id = id,
-  name = 'snake_case',
+  name = 'kebab-case',
 
-  -- Parses snake_case.
+  -- Parses kebab-case.
   parser = function(word)
     local parts = {}
     local part, tail = word:match('^(%l+%d*)(.+)')
     if part then
       table.insert(parts, part)
       while tail ~= nil and tail ~= '' do
-        part, tail = tail:match('^_(%l+%d*)(.*)')
+        part, tail = tail:match('^%-(%l+%d*)(.*)')
         if part == nil then return false end
         table.insert(parts, part)
       end
@@ -22,29 +22,30 @@ local M = {
     return false
   end,
 
-  -- Converts to snake_case or SCREAMING_SNAKE_CASE.
+  -- Converts to kebab-case or SCREAMING-KEBAB-CASE.
   converter = function(parts, scream)
-    local result = table.concat(parts or {}, '_')
+    parts = parts or {}
+    local result = table.concat(parts, '-')
     result = scream == true and result:upper() or result:lower()
     return result
   end,
 }
 
----@type opposites.ConfigCasesId
+---@type swap.ConfigCasesId
 local id_screaming = 'screaming_' .. id
 
 M.screaming = {
   id = id_screaming,
-  name = 'SCREAMING_SNAKE_CASE',
+  name = 'SCREAMING-KEBAB-CASE',
 
-  -- Parses SCREAMING_SNAKE_CASE.
+  -- Parses SCREAMING-KEBAB-CASE.
   parser = function(word)
     local parts = {}
     local part, tail = word:match('^(%u+%d*)(.+)')
     if part then
       table.insert(parts, part)
       while tail ~= nil and tail ~= '' do
-        part, tail = tail:match('^_(%u+%d*)(.*)')
+        part, tail = tail:match('^%-(%u+%d*)(.*)')
         if part == nil then return false end
         table.insert(parts, part)
       end
@@ -53,7 +54,7 @@ M.screaming = {
     return false
   end,
 
-  -- Converts to SCREAMING_SNAKE_CASE.
+  -- Converts to SCREAMING-KEBAB-CASE.
   converter = function(parts) return M.converter(parts, true) end,
 }
 

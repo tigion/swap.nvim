@@ -1,8 +1,8 @@
-local config = require('opposites.config')
-local notify = require('opposites.notify')
-local util = require('opposites.util')
+local config = require('swap.config')
+local notify = require('swap.notify')
+local util = require('swap.util')
 
----@class opposites.opposites
+---@class swap.opposites
 local M = {}
 
 ---Returns the index of the beginning of the word
@@ -36,11 +36,11 @@ end
 ---Returns the results for the words found or their opposite
 ---in the given line near the given column.
 ---@param line string The line string to search in.
----@param cursor opposites.Cursor The cursors position.
----@return opposites.Results # The found results.
+---@param cursor swap.Cursor The cursors position.
+---@return swap.Results # The found results.
 local function find_results(line, cursor)
   local words = config.merge_opposite_words()
-  local results = {} ---@type opposites.Results
+  local results = {} ---@type swap.Results
 
   -- Finds the word or the opposite word in the line.
   for w, ow in pairs(words) do
@@ -92,9 +92,9 @@ end
 
 ---Returns the found results.
 ---@param line string The line string to search in.
----@param cursor opposites.Cursor The cursors position.
+---@param cursor swap.Cursor The cursors position.
 ---@param quiet? boolean Whether to quiet the notifications.
----@return opposites.Results # The found results.
+---@return swap.Results # The found results.
 function M.get_results(line, cursor, quiet)
   quiet = quiet or false
 

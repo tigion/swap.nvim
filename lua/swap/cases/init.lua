@@ -1,35 +1,34 @@
-local config = require('opposites.config')
-local notify = require('opposites.notify')
-local util = require('opposites.util')
+local config = require('swap.config')
+local notify = require('swap.notify')
 
----@class opposites.cases
+---@class swap.cases
 M = {}
 
 -- TODO: Needs some refactoring.
 
----@class opposites.CasesSource
----@field id opposites.ConfigCasesId
+---@class swap.CasesSource
+---@field id swap.ConfigCasesId
 ---@field name string
----@field parser fun(word: string): opposites.CasesResult|boolean
+---@field parser fun(word: string): swap.CasesResult|boolean
 ---@field converter fun(parts: string[], scream?: boolean): string
----@field screaming? opposites.CasesSource
+---@field screaming? swap.CasesSource
 
----@class opposites.CasesType
+---@class swap.CasesType
 ---@field name string
----@field parser fun(word: string): opposites.CasesResult|boolean
+---@field parser fun(word: string): swap.CasesResult|boolean
 ---@field converter fun(parts: string[], scream?: boolean): string
 
----@class opposites.CasesResult
+---@class swap.CasesResult
 ---@field parts string[]
 ---@field case_type_id string
 
-local snake = require('opposites.cases.sources.snake')
-local kebab = require('opposites.cases.sources.kebab')
-local camel = require('opposites.cases.sources.camel')
-local pascal = require('opposites.cases.sources.pascal')
+local snake = require('swap.cases.sources.snake')
+local kebab = require('swap.cases.sources.kebab')
+local camel = require('swap.cases.sources.camel')
+local pascal = require('swap.cases.sources.pascal')
 
 ---Contains the supported case types.
----@type table<string, opposites.CasesType>
+---@type table<string, swap.CasesType>
 local cases = {
   [snake.id] = {
     name = snake.name,
@@ -104,7 +103,7 @@ local function find_word_in_line(line, col)
 end
 
 ---Gets the allowed case types filtered by the user config.
----@return opposites.ConfigCases
+---@return swap.ConfigCases
 local function get_allowed_case_types()
   -- Gets the case types from the user config.
   local user_cases = config.options.cases.types
@@ -121,7 +120,7 @@ end
 
 ---Parses the given word with the allowed case types.
 ---@param word string The word to parse.
----@return opposites.CasesResult|boolean # The parsed result or false.
+---@return swap.CasesResult|boolean # The parsed result or false.
 local function parse_allowed_case_types(word)
   for _, case_type in pairs(get_allowed_case_types()) do
     local result = case_type.parser(word)
@@ -176,9 +175,9 @@ end
 
 ---Returns the results for the found word and its next case type.
 ---@param line string The line string to search in.
----@param cursor opposites.Cursor The cursors position.
+---@param cursor swap.Cursor The cursors position.
 ---@param quiet? boolean Whether to quiet the notifications.
----@return opposites.Results # The found results.
+---@return swap.Results # The found results.
 local function find_results(line, cursor, quiet)
   local results = {}
 
@@ -212,9 +211,9 @@ end
 
 ---Returns the found results.
 ---@param line string The line string to search in.
----@param cursor opposites.Cursor The cursors position.
+---@param cursor swap.Cursor The cursors position.
 ---@param quiet? boolean Whether to quiet the notifications.
----@return opposites.Results # The found results.
+---@return swap.Results # The found results.
 function M.get_results(line, cursor, quiet)
   quiet = quiet or false
 

@@ -1,55 +1,55 @@
----@class opposites.config
+---@class swap.config
 local M = {}
 
----@alias opposites.ConfigModule
+---@alias swap.ConfigModule
 --- | 'opposites'
 --- | 'cases'
 --- | 'chains'
 --- | 'todos'
----@alias opposites.ConfigOppositesWords table<string, string>
----@alias opposites.ConfigOppositesWordsByFt table<string, opposites.ConfigOppositesWords>
----@alias opposites.ConfigChainsWords string[][]
----@alias opposites.ConfigChainsWordsByFt table<string, opposites.ConfigChainsWords>
----@alias opposites.ConfigCasesId
+---@alias swap.ConfigOppositesWords table<string, string>
+---@alias swap.ConfigOppositesWordsByFt table<string, swap.ConfigOppositesWords>
+---@alias swap.ConfigChainsWords string[][]
+---@alias swap.ConfigChainsWordsByFt table<string, swap.ConfigChainsWords>
+---@alias swap.ConfigCasesId
 --- | 'snake' snake_case
 --- | 'screaming_snake' SCREAMING_SNAKE_CASE
 --- | 'kebab' kebab-case
 --- | 'screaming_kebab' SCREAMING-KEBAB-CASE
 --- | 'camel' camelCase
 --- | 'pascal' PascalCase
----@alias opposites.ConfigCasesTypes opposites.ConfigCasesId[]
+---@alias swap.ConfigCasesTypes swap.ConfigCasesId[]
 
----@class opposites.ConfigAll
----@field modules? opposites.ConfigModule[] The default submodules to use.
+---@class swap.ConfigAll
+---@field modules? swap.ConfigModule[] The default submodules to use.
 
----@class opposites.ConfigOpposites
+---@class swap.ConfigOpposites
 ---@field use_case_sensitive_mask? boolean Whether to use a case sensitive mask.
 ---@field use_default_words? boolean Whether to use the default opposites.
----@field use_default_words_by_ft? boolean Whether to use the default opposites.
----@field words? opposites.ConfigOppositesWords The words with their opposite words.
----@field words_by_ft? opposites.ConfigOppositesWordsByFt The file type specific words with their opposite words.
+---@field use_default_words_by_ft? boolean Whether to use the default opposites by file type.
+---@field words? swap.ConfigOppositesWords The words with their opposite words.
+---@field words_by_ft? swap.ConfigOppositesWordsByFt The file type specific words with their opposite words.
 
----@class opposites.ConfigChains
+---@class swap.ConfigChains
 ---@field use_case_sensitive_mask? boolean Whether to use a case sensitive mask.
----@field words? opposites.ConfigChainsWords The word chains to search for.
----@field words_by_ft? opposites.ConfigChainsWordsByFt The file type specific word chains to search for.
+---@field words? swap.ConfigChainsWords The word chains to search for.
+---@field words_by_ft? swap.ConfigChainsWordsByFt The file type specific word chains to search for.
 
----@class opposites.ConfigCases
----@field types? opposites.ConfigCasesTypes The allowed case types to parse.
+---@class swap.ConfigCases
+---@field types? swap.ConfigCasesTypes The allowed case types to parse.
 
----@class opposites.ConfigNotify
+---@class swap.ConfigNotify
 ---@field found? boolean Whether to notify when a word is found.
 ---@field not_found? boolean Whether to notify when no word is found.
 
----@class opposites.Config
+---@class swap.Config
 ---@field max_line_length? integer The maximum line length to search.
----@field all? opposites.ConfigAll The options for all modules.
----@field opposites? opposites.ConfigOpposites The options for the opposites.
----@field cases? opposites.ConfigCases The options for the cases.
----@field chains? opposites.ConfigChains The options for the chains.
----@field notify? opposites.ConfigNotify The notifications to show.
+---@field all? swap.ConfigAll The options for all modules.
+---@field opposites? swap.ConfigOpposites The options for the opposites.
+---@field cases? swap.ConfigCases The options for the cases.
+---@field chains? swap.ConfigChains The options for the chains.
+---@field notify? swap.ConfigNotify The notifications to show.
 
----@type opposites.Config
+---@type swap.Config
 local defaults = {
   max_line_length = 1000,
   all = {
@@ -102,12 +102,12 @@ local defaults = {
   },
 }
 
----@type opposites.Config
+---@type swap.Config
 M.options = defaults -- vim.deepcopy(defaults)
 
 ---Cleans up redundant opposite words.
----@param words opposites.ConfigOppositesWords
----@return opposites.ConfigOppositesWords
+---@param words swap.ConfigOppositesWords
+---@return swap.ConfigOppositesWords
 local function cleanup_opposite_words(words)
   for w, ow in pairs(words) do
     if w == words[w] then
@@ -120,8 +120,8 @@ local function cleanup_opposite_words(words)
 end
 
 ---Cleans up redundant opposite words by ft.
----@param words opposites.ConfigOppositesWordsByFt
----@return opposites.ConfigOppositesWordsByFt
+---@param words swap.ConfigOppositesWordsByFt
+---@return swap.ConfigOppositesWordsByFt
 local function cleanup_opposite_words_by_ft(words)
   for _, opposites in pairs(words) do
     opposites = cleanup_opposite_words(opposites)
@@ -130,11 +130,11 @@ local function cleanup_opposite_words_by_ft(words)
 end
 
 ---Setups the plugin.
----@param opts? opposites.Config
+---@param opts? swap.Config
 function M.setup(opts)
   opts = opts or {}
 
-  -- Clears the default opposites if the user doesn't want to use them.
+  -- Clears the default opposite words if the user doesn't want to use them.
   if opts.opposites.use_default_words == false then M.options.opposites.words = {} end
   if opts.opposites.use_default_words_by_ft == false then M.options.opposites.words_by_ft = {} end
 
@@ -150,7 +150,7 @@ end
 
 ---Returns the merged opposites words from the default and
 ---the current file type specific ones.
----@return opposites.ConfigOppositesWords
+---@return swap.ConfigOppositesWords
 function M.merge_opposite_words()
   local words = M.options.opposites.words or {}
   local words_by_ft = M.options.opposites.words_by_ft or {}

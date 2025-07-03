@@ -1,21 +1,21 @@
-local config = require('opposites.config')
-local notify = require('opposites.notify')
-local util = require('opposites.util')
+local config = require('swap.config')
+local notify = require('swap.notify')
+local util = require('swap.util')
 
 -- TODO:
 -- - [ ] Allow multiple default or filetype specific todo syntaxes.
 -- - [ ] Add better state position identification.
 
----@class opposites.todos
+---@class swap.todos
 local M = {}
 
----@class opposites.TodoSyntax
+---@class swap.TodoSyntax
 ---@field pattern string The pattern to search for.
 ---@field states string[] The states to switch between.
 ---@field state_pos_offset integer The offset off the end index for the state position.
 
----@alias opposites.TodoSyntaxes opposites.TodoSyntax[]
----@alias opposites.TodoSyntaxByFt table<string, opposites.TodoSyntax>
+---@alias swap.TodoSyntaxes swap.TodoSyntax[]
+---@alias swap.TodoSyntaxByFt table<string, swap.TodoSyntax>
 
 local todo_syntax_default = {
   pattern = '- %[([ -x])%] ',
@@ -37,7 +37,7 @@ local todo_syntax_by_ft = {
 
 ---Returns the combined todo syntaxes of the default and
 ---the current file type specific ones.
----@return opposites.TodoSyntaxes
+---@return swap.TodoSyntaxes
 local function get_todo_syntaxes()
   local syntaxes = {}
   local syntax_by_ft = todo_syntax_by_ft[vim.bo.filetype]
@@ -49,10 +49,10 @@ end
 ---Returns the results for the words found or their opposite
 ---in the given line near the given column.
 ---@param line string The line string to search in.
----@param cursor opposites.Cursor The cursors position.
----@return opposites.Results # The found results.
+---@param cursor swap.Cursor The cursors position.
+---@return swap.Results # The found results.
 local function find_results(line, cursor)
-  local results = {} ---@type opposites.Results
+  local results = {} ---@type swap.Results
 
   -- Gets the filetype specified todo syntaxes.
   local syntaxes = get_todo_syntaxes()
@@ -91,9 +91,9 @@ end
 
 ---Returns the found results.
 ---@param line string The line string to search in.
----@param cursor opposites.Cursor The cursors position.
+---@param cursor swap.Cursor The cursors position.
 ---@param quiet? boolean Whether to quiet the notifications.
----@return opposites.Results # The found results.
+---@return swap.Results # The found results.
 function M.get_results(line, cursor, quiet)
   quiet = quiet or false
 

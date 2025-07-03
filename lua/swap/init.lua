@@ -1,38 +1,38 @@
-local config = require('opposites.config')
-local notify = require('opposites.notify')
-local core = require('opposites.core')
+local config = require('swap.config')
+local notify = require('swap.notify')
+local core = require('swap.core')
 
-local opposites = require('opposites.opposites')
-local cases = require('opposites.cases')
-local chains = require('opposites.chains')
-local todos = require('opposites.todos')
+local opposites = require('swap.opposites')
+local cases = require('swap.cases')
+local chains = require('swap.chains')
+local todos = require('swap.todos')
 
 ---@class opposites
 local M = {}
 
 -- Exports the module.
--- So `Opposites.switch()` can be used instead of `require('opposites').switch()`.
+-- So `Swap.switch()` can be used instead of `require('swap').switch()`.
 -- This only works after the plugin is loaded/required.
--- _G.Opposites = M
+-- _G.Swap = M
 
----@class opposites.Cursor
+---@class swap.Cursor
 ---@field row integer
 ---@field col integer
 
----@class opposites.ResultOpts
+---@class swap.ResultOpts
 ---@field cursor_outside? boolean The cursor can be outside the new string.
 
----@class opposites.Result
+---@class swap.Result
 ---@field str string The found string.
 ---@field new_str string The new string.
 ---@field start_idx integer The start index of the string in the line.
----@field cursor opposites.Cursor The cursor position.
+---@field cursor swap.Cursor The cursor position.
 ---@field module string The module name.
----@field opts? opposites.ResultOpts The options for the result.
+---@field opts? swap.ResultOpts The options for the result.
 
----@alias opposites.Results opposites.Result[]
+---@alias swap.Results swap.Result[]
 
----@param opts? opposites.Config
+---@param opts? swap.Config
 function M.setup(opts)
   -- Checks the supported neovim version.
   if vim.fn.has('nvim-0.10') == 0 then
@@ -45,11 +45,11 @@ function M.setup(opts)
 end
 
 ---Uses the given module to get the results.
----@param module? opposites.ConfigModule The module to use.
+---@param module? swap.ConfigModule The module to use.
 ---@param line string The current line string.
----@param cursor opposites.Cursor The current cursor position.
+---@param cursor swap.Cursor The current cursor position.
 ---@param quiet? boolean Whether to quiet the notifications.
----@return opposites.Results # The found results.
+---@return swap.Results # The found results.
 local function use_module(module, line, cursor, quiet)
   quiet = quiet or false
   local results = {}
@@ -90,12 +90,12 @@ local function use_module(module, line, cursor, quiet)
 end
 
 ---Switches string under the cursor with the given module.
----@param module? opposites.ConfigModule The module to use.
+---@param module? swap.ConfigModule The module to use.
 local function switch(module)
   -- Gets the current line string and the current cursor position.
   local line = vim.api.nvim_get_current_line()
   local row, col = unpack(vim.api.nvim_win_get_cursor(0))
-  local cursor = { row = row, col = col } ---@type opposites.Cursor
+  local cursor = { row = row, col = col } ---@type swap.Cursor
 
   -- Checks the max allowed line length.
   local line_length = line:len()

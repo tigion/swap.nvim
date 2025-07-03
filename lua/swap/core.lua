@@ -1,9 +1,9 @@
----@class opposites.core
+---@class swap.core
 local M = {}
 
 ---Replaces a string in a line.
 ---@param line string The line to replace in.
----@param result opposites.Result The result set.
+---@param result swap.Result The result set.
 ---@return string # Returns the line with the relpaced string.
 local function replace_str_in_line(line, result)
   local left_part = string.sub(line, 1, result.start_idx - 1)
@@ -13,7 +13,7 @@ end
 
 ---Corrects the cursor position if it is outside the new string
 ---or if the cursor position has changed.
----@param cursor opposites.Cursor
+---@param cursor swap.Cursor
 ---@param start_idx integer
 ---@param new_str string
 ---@param can_outside? boolean The cursor can be outside the new string.
@@ -44,7 +44,7 @@ end
 
 ---Replaces the string in the current line.
 ---This function is used as a callback function for `vim.ui.select`.
----@param result opposites.Result
+---@param result swap.Result
 function M.replace_str_in_current_line(result)
   -- Gets the current line.
   local current_line = vim.api.nvim_get_current_line()
@@ -62,7 +62,7 @@ end
 
 ---Handles the results to replace the string in the current line.
 ---If there are multiple results, asks the user to select one.
----@param results opposites.Results
+---@param results swap.Results
 function M.handle_results(results)
   if #results < 1 then
     -- No results found.
@@ -77,7 +77,7 @@ function M.handle_results(results)
       table.insert(choices, result.str .. ' -> ' .. result.new_str .. ' (' .. result.module .. ')')
     end
     vim.ui.select(choices, {
-      prompt = 'Opposites - Multiple results found:',
+      prompt = 'Swap - Multiple results found:',
     }, function(_, idx)
       if idx ~= nil and idx > 0 then M.replace_str_in_current_line(results[idx]) end
     end)

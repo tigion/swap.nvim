@@ -1,13 +1,13 @@
-local config = require('opposites.config')
-local notify = require('opposites.notify')
-local util = require('opposites.util')
+local config = require('swap.config')
+local notify = require('swap.notify')
+local util = require('swap.util')
 
----@class opposites.chains
+---@class swap.chains
 local M = {}
 
 ---Returns the combined word chains of the default and
 ---the current file type specific ones.
----@return opposites.ConfigChainsWords
+---@return swap.ConfigChainsWords
 local function get_word_chains()
   local word_chains = vim.deepcopy(config.options.chains.words) or {}
   local word_chains_by_ft = config.options.chains.words_by_ft[vim.bo.filetype]
@@ -28,10 +28,10 @@ end
 ---Returns the results for the words found or their opposite
 ---in the given line near the given column.
 ---@param line string The line string to search in.
----@param cursor opposites.Cursor The cursors position.
----@return opposites.Results # The found results.
+---@param cursor swap.Cursor The cursors position.
+---@return swap.Results # The found results.
 local function find_results(line, cursor)
-  local results = {} ---@type opposites.Results
+  local results = {} ---@type swap.Results
   local word_chains = get_word_chains()
 
   -- Iterates over the word chains.
@@ -84,9 +84,9 @@ end
 
 ---Returns the found results.
 ---@param line string The line string to search in.
----@param cursor opposites.Cursor The cursors position.
+---@param cursor swap.Cursor The cursors position.
 ---@param quiet? boolean Whether to quiet the notifications.
----@return opposites.Results # The found results.
+---@return swap.Results # The found results.
 function M.get_results(line, cursor, quiet)
   quiet = quiet or false
 
