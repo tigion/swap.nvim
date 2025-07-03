@@ -15,7 +15,7 @@ versa (see [Features](#features)).
 > - The plugin module name has changed from `opposites` to `swap`.
 >
 > More information and older notes can be found in the
-> [Changes](#️-breaking-changes) section.
+> [Breaking Changes](#️-breaking-changes) section.
 
 Other similar or better plugins are:
 
