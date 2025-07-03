@@ -9,15 +9,11 @@ versa (see [Features](#-features)).
 > This plugin is based on my personal needs. Work in progress. 🚀
 
 > [!CAUTION]
-> BREAKING CHANGES
->
-> - **2025-07-03**: The name has changed.
+> **BREAKING CHANGES** (2025-07-03): The name has changed.
 >   - The repo name has changed from `nvim-opposites` to `swap.nvim`.
 >   - The plugin module name has changed from `opposites` to `swap`.
-> - 2025-06-24: The functions have changed.
-> - 2025-06-19: The configuration has changed.
 >
-> See the [Breaking Changes](#️-breaking-changes) section for more information.
+> More information and older notes can be found in the [Changes](#️-breaking-changes) section.
 
 Other similar or better plugins are:
 
@@ -26,22 +22,22 @@ Other similar or better plugins are:
 
 **Table of Contents**:
 
-- ✨ [Features](#-features)
-- ⚡️ [Requirements](#️-requirements)
-- 📦 [Installation](#-installation)
-- 🚀 [Usage](#-usage)
-- 🎁 [Modules](#-modules)
-  - 🧩 [opposites](#-opposites), [chains](#-chains), [cases](#-cases), [todos](#-todos)
-- ⚙️ [Configuration](#️-configuration)
-  - [Default Options](#default-options)
-- 📘 [Notes](#-notes)
-  - [Case Sensitive Mask](#case-sensitive-mask)
+- [Features](#-features)
+- [Requirements](#️-requirements)
+- [Installation](#-installation)
+- [Usage](#-usage)
+- [Modules](#-modules):
+  [opposites](#-opposites), [chains](#-chains), [cases](#-cases), [todos](#-todos)
+- [Configuration](#️-configuration):
+  [Default Options](#default-options)
+- [Notes](#-notes):
+  [Case Sensitive Mask](#case-sensitive-mask)
 - ‼️ [Breaking Changes](#️-breaking-changes)
-- 📋 [TODO](#-todo)
+- [Todo](#-todo)
 
 &nbsp;
 
-## ✨ Features
+## Features
 
 - **Switches between opposite words** (see [opposites]).
   - e.g. `true` -> `false`
@@ -57,11 +53,11 @@ Other similar or better plugins are:
 
 If several results are found, the user is asked which result to switch to.
 
-## ⚡️ Requirements
+## Requirements
 
 - Neovim >= 0.10
 
-## 📦 Installation
+## Installation
 
 ### [lazy.nvim]
 
@@ -85,7 +81,7 @@ return {
 
 &nbsp;
 
-## 🚀 Usage
+## Usage
 
 | Function                             | Description                                                     | Module      |
 | ------------------------------------ | --------------------------------------------------------------- | ----------- |
@@ -123,7 +119,7 @@ opts = {
 
 &nbsp;
 
-## 🎁 Modules
+## Modules
 
 | Module      | Description                         |
 | ----------- | ----------------------------------- |
@@ -134,7 +130,7 @@ opts = {
 
 &nbsp;
 
-### 🧩 Opposites
+### Opposites
 
 [opposites]: #-opposites
 
@@ -179,7 +175,7 @@ opts = {
 
 &nbsp;
 
-### 🧩 Chains
+### Chains
 
 [chains]: #-chains
 
@@ -229,7 +225,7 @@ Rules:
 
 &nbsp;
 
-### 🧩 Cases
+### Cases
 
 [cases]: #-cases
 
@@ -246,10 +242,8 @@ Example:
 
 Supported case types are:
 
-- snake_case
-- SCREAMING_SNAKE_CASE
-- kebab-case
-- SCREAMING-KEBAB-CASE
+- snake_case, SCREAMING_SNAKE_CASE
+- kebab-case, SCREAMING-KEBAB-CASE
 - camelCase
 - PascalCase
 
@@ -292,25 +286,25 @@ Examples:
 
 &nbsp;
 
-### 🧩 Todos
+### Todos
 
 [todos]: #-todos
 
 > [!WARNING]
-> This feature is experimental and work in progress.
+> This feature is work in progress.
 
 Call `require('swap').todos.switch()` to switch through the todo states.
-
-Supported filetype specific todo syntaxes:
-
-- [Markdown Task-Lists](https://www.markdownguide.org/extended-syntax/#task-lists):
-  - `- [ ] foo` with the states `[ ]`, `[-]` and `[x]`
-- [AsciiDoc Checklist](https://docs.asciidoctor.org/asciidoc/latest/lists/checklist/):
-  - `* [ ] foo` with the states `[ ]` and `[x]`
 
 Supported default todo syntaxes:
 
 - `- [ ] foo` with the states `[ ]` and `[x]` also within lines and comments
+
+Supported filetype specific todo syntaxes:
+
+- [Markdown Task-Lists](https://www.markdownguide.org/extended-syntax/#task-lists):
+  `- [ ] foo` with the states `[ ]`, `[-]` and `[x]`
+- [AsciiDoc Checklist](https://docs.asciidoctor.org/asciidoc/latest/lists/checklist/):
+  `* [ ] foo` with the states `[ ]` and `[x]`
 
 Rules:
 
@@ -320,7 +314,7 @@ Rules:
 
 &nbsp;
 
-## ⚙️ Configuration
+## Configuration
 
 In [lazy.nvim], use the table `opts = {}` for your own configuration. For other
 plugin manager, call the setup function `require('swap').setup({})` with the
@@ -439,7 +433,7 @@ local defaults = {
 
 &nbsp;
 
-## 📘 Notes
+## Notes
 
 ### Case Sensitive Mask
 
@@ -496,7 +490,7 @@ Example with `['enable'] = 'Disable'`:
 
 &nbsp;
 
-## 📋 TODO
+## Todo
 
 - [ ] Limit and check the user configuration.
 - [x] Change the plugin name to `swap.nvim`.
