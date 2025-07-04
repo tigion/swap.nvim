@@ -21,6 +21,7 @@ local M = {}
 
 ---@class swap.ResultOpts
 ---@field cursor_outside? boolean The cursor can be outside the new string.
+---@field overlapping_match_idx? integer The index of overlapping matches for the same string.
 
 ---@class swap.Result
 ---@field str string The found string.

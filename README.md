@@ -32,8 +32,9 @@ Other similar or better plugins are:
   [opposites](#opposites), [chains](#chains), [cases](#cases), [todos](#todos)
 - [Configuration](#configuration):
   [Default Options](#default-options)
-- [Notes](#notes):
-  [Case Sensitive Mask](#case-sensitive-mask)
+- [Notes](#notes)
+  - [Case Sensitive Mask](#case-sensitive-mask)
+  - [Overlapping Matches](#overlapping-matches)
 - ‼️ [Breaking Changes](#️-breaking-changes)
 - [Todo](#todo)
 
@@ -370,6 +371,8 @@ provided options in `{}` directly.
 
 ---@class swap.Config
 ---@field max_line_length? integer The maximum line length to search.
+---@field ignore_overlapping_matches? boolean Whether to ignore overlapping matches.
+---@field all? swap.ConfigAll The options for all modules.
 ---@field opposites? swap.ConfigOpposites The options for the opposites.
 ---@field cases? swap.ConfigCases The options for the cases.
 ---@field chains? swap.ConfigChains The options for the chains.
@@ -382,6 +385,7 @@ provided options in `{}` directly.
 ---@type swap.Config
 local defaults = {
   max_line_length = 1000,
+  ignore_overlapping_matches = true,
   all = {
     modules = { 'opposites', 'chains' },
   },
@@ -467,6 +471,15 @@ Example with `['enable'] = 'Disable'`:
 
 - found: `enable`
 - replaced with: `Disable`
+
+### Overlapping Matches
+
+By default, overlapping matches are ignored. This means that for the word
+`foofoo`, if the cursor is in the middle `foo` of the word `foofoofoo`, only
+the first `foofoo` is found and the second `foofoo` is ignored.
+
+If you want to not ignore overlapping matches, set the option
+`opts.ignore_overlapping_matches` to `false` (default is `true`).
 
 &nbsp;
 

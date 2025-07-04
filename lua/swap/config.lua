@@ -20,7 +20,7 @@ local M = {}
 ---@alias swap.ConfigCasesTypes swap.ConfigCasesId[]
 
 ---@class swap.ConfigAll
----@field modules? swap.ConfigModule[] The default submodules to use.
+---@field modules? swap.ConfigModule[] The default modules to use.
 
 ---@class swap.ConfigOpposites
 ---@field use_case_sensitive_mask? boolean Whether to use a case sensitive mask.
@@ -43,6 +43,7 @@ local M = {}
 
 ---@class swap.Config
 ---@field max_line_length? integer The maximum line length to search.
+---@field ignore_overlapping_matches? boolean Whether to ignore overlapping matches.
 ---@field all? swap.ConfigAll The options for all modules.
 ---@field opposites? swap.ConfigOpposites The options for the opposites.
 ---@field cases? swap.ConfigCases The options for the cases.
@@ -52,6 +53,7 @@ local M = {}
 ---@type swap.Config
 local defaults = {
   max_line_length = 1000,
+  ignore_overlapping_matches = true,
   all = {
     modules = { 'opposites', 'chains' },
   },
@@ -151,7 +153,7 @@ end
 ---Returns the merged opposites words from the default and
 ---the current file type specific ones.
 ---@return swap.ConfigOppositesWords
-function M.merge_opposite_words()
+function M.get_opposite_words_by_ft()
   local words = M.options.opposites.words or {}
   local words_by_ft = M.options.opposites.words_by_ft or {}
   local filetype = vim.bo.filetype
@@ -162,6 +164,16 @@ function M.merge_opposite_words()
     words = cleanup_opposite_words(words)
   end
   return words
+end
+
+---Returns the combined word chains of the default and
+---the current file type specific ones.
+---@return swap.ConfigChainsWords
+function M.get_word_chains_by_ft()
+  local word_chains = vim.deepcopy(M.options.chains.words) or {}
+  local word_chains_by_ft = M.options.chains.words_by_ft[vim.bo.filetype]
+  if word_chains_by_ft then vim.list_extend(word_chains, word_chains_by_ft) end
+  return word_chains
 end
 
 return M

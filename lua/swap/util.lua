@@ -14,6 +14,16 @@ function M.mask.has_uppercase(word)
   return false
 end
 
+---Returns true if at least one word in the array of words has uppercase letters.
+---@param words string[] The words to check.
+---@return boolean # True if at least one word has uppercase letters.
+function M.mask.has_uppercase_words(words)
+  for _, word in ipairs(words) do
+    if M.mask.has_uppercase(word) then return true end
+  end
+  return false
+end
+
 ---Returns the case sensitive mask for the given word.
 ---
 ---- If the word is lowercase, the mask is false.

@@ -1,5 +1,67 @@
+local config = require('swap.config')
+
 ---@class swap.core
 local M = {}
+
+---Returns the start indexes of the found string in the line near the cursor.
+---Multiple matches for overlapping words are possible.
+--
+--         |
+--     false            <- cursor at word end
+--       false          <- cursor in word
+--         false        <- cursor at word start
+--         |
+-- 45678901234567890123 <- index in line
+-- 34567890123456789012 <- column
+--     ^   ^            <- min/max start index
+--         |
+--         ^            <- cursor position
+--
+--        word len:  5
+--             col: 11 (12)
+-- min_idx in line:  8 <- (11 + 1) - (5 - 1)
+--             idx: 10
+--
+-- Find overlapping matches e.g. `foofoo` in `foofoofoofoo`:
+--
+--     foofoofoofoo     <- cursor in word
+--         |
+-- 45678901234567890123 <- index in line
+-- 34567890123456789012 <- column
+--         |
+--     foofoo           <- match 1: start index 8
+--        foofoo        <- match 2: start index 11
+--         |
+--         ^            <- cursor position
+--
+---@param line string The line string to search in.
+---@param cursor swap.Cursor The cursors position.
+---@param str string The string to find.
+---@return integer[] # The start indexes of the found string or empty if nothing found.
+function M.find_str_in_line(line, cursor, str)
+  -- Converts index from column (0-based) to string (1-based).
+  local col_idx = cursor.col + 1
+  -- The minimum start index to start searching from.
+  local min_start_idx = col_idx - (#str - 1)
+
+  local start_idx -- The found start index.
+  local start_idxs = {} -- The found start indexes.
+
+  -- Finds the start indexes of the string in the line.
+  while min_start_idx <= col_idx do
+    start_idx = string.find(line, str, min_start_idx, true) -- Uses no pattern matching.
+    -- Breaks if the start index is nil or if it is after the cursor position.
+    if start_idx == nil or start_idx > col_idx then break end
+    -- Adds the start index to the list of start indexes.
+    table.insert(start_idxs, start_idx)
+    -- Breaks if the option is set to ignore overlapping matches.
+    if config.options.ignore_overlapping_matches then break end
+    -- Sets the new minimum start index.
+    min_start_idx = start_idx + 1
+  end
+
+  return start_idxs
+end
 
 ---Replaces a string in a line.
 ---@param line string The line to replace in.
@@ -23,7 +85,7 @@ local function correct_cursor_position(cursor, start_idx, new_str, can_outside)
   -- Gets the current cursor position.
   local row, col = unpack(vim.api.nvim_win_get_cursor(0))
 
-  -- Converts index (1-based) to column (0-based).
+  -- Converts index from string (1-based) to column (0-based).
   local start_col = start_idx - 1
   local end_col = start_idx - 1 + #new_str - 1
 
@@ -74,7 +136,12 @@ function M.handle_results(results)
     -- Multiple results found, asks the user to select one.
     local choices = {}
     for _, result in ipairs(results) do
-      table.insert(choices, result.str .. ' -> ' .. result.new_str .. ' (' .. result.module .. ')')
+      local module_match = ''
+      if result.opts and result.opts.overlapping_match_idx then
+        module_match = ', match ' .. result.opts.overlapping_match_idx
+      end
+      local choice_str = result.str .. ' -> ' .. result.new_str .. ' (' .. result.module .. module_match .. ')'
+      table.insert(choices, choice_str)
     end
     vim.ui.select(choices, {
       prompt = 'Swap - Multiple results found:',

@@ -1,29 +1,10 @@
 local config = require('swap.config')
+local core = require('swap.core')
 local notify = require('swap.notify')
 local util = require('swap.util')
 
 ---@class swap.chains
 local M = {}
-
----Returns the combined word chains of the default and
----the current file type specific ones.
----@return swap.ConfigChainsWords
-local function get_word_chains()
-  local word_chains = vim.deepcopy(config.options.chains.words) or {}
-  local word_chains_by_ft = config.options.chains.words_by_ft[vim.bo.filetype]
-  if word_chains_by_ft then vim.list_extend(word_chains, word_chains_by_ft) end
-  return word_chains
-end
-
----Checks if the words in the word chain contain uppercase letters.
----@param word_chain string[]
----@return boolean
-local function has_uppercase_words(word_chain)
-  for _, word in ipairs(word_chain) do
-    if util.mask.has_uppercase(word) then return true end
-  end
-  return false
-end
 
 ---Returns the results for the words found or their opposite
 ---in the given line near the given column.
@@ -32,7 +13,7 @@ end
 ---@return swap.Results # The found results.
 local function find_results(line, cursor)
   local results = {} ---@type swap.Results
-  local word_chains = get_word_chains()
+  local word_chains = config.get_word_chains_by_ft()
 
   -- Iterates over the word chains.
   for _, word_chain in ipairs(word_chains) do
@@ -42,22 +23,21 @@ local function find_results(line, cursor)
     -- Uses a case sensitive mask if the option is activated and
     -- the words in the word chain contains no uppercase letters.
     local use_mask = false
-    if config.options.chains.use_case_sensitive_mask and not has_uppercase_words(word_chain) then use_mask = true end
+    if config.options.chains.use_case_sensitive_mask and not util.mask.has_uppercase_words(word_chain) then
+      use_mask = true
+    end
 
     -- Iterates over the words in the word chain.
-    for idx, word in ipairs(word_chain) do
-      -- Finds the word in the line under the cursor.
-      local start_idx, end_idx
-      while true do
-        -- Finds the word in the line.
-        start_idx, end_idx = string.find(use_mask and line:lower() or line, word, (end_idx or 0) + 1, true) -- Uses no pattern matching.
-        if start_idx == nil then break end
+    for word_idx, word in ipairs(word_chain) do
+      -- Finds the start indexes of the word in the line.
+      local start_idxs = core.find_str_in_line(use_mask and line:lower() or line, cursor, word)
 
-        -- Uses the word if the cursor is inside it.
-        if start_idx <= cursor.col + 1 and end_idx >= cursor.col + 1 then
-          -- Gets the next word in the word chain.
-          local next_word = word_chain[next(word_chain, idx) or next(word_chain)]
+      if #start_idxs > 0 then
+        -- Gets the next word from the word chain.
+        local next_word = word_chain[next(word_chain, word_idx) or next(word_chain)]
 
+        -- Iterates over the found start indexes.
+        for match_idx, start_idx in ipairs(start_idxs) do
           -- Applies the case sensitive mask if the mask is used.
           if use_mask then
             -- Gets the original word.
@@ -73,6 +53,10 @@ local function find_results(line, cursor)
             start_idx = start_idx,
             cursor = cursor,
             module = 'chains',
+            opts = {
+              -- Sets the match index if there are overlapping matches.
+              overlapping_match_idx = (#start_idxs > 1 and match_idx or nil),
+            },
           })
         end
       end

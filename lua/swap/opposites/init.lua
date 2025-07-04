@@ -1,37 +1,10 @@
 local config = require('swap.config')
+local core = require('swap.core')
 local notify = require('swap.notify')
 local util = require('swap.util')
 
 ---@class swap.opposites
 local M = {}
-
----Returns the index of the beginning of the word
----in the line near the cursor.
---
---         |
---     false            <- cursor at word end
---       false          <- cursor in word
---         false        <- cursor at word start
---         |
--- 45678901234567890123 <- index in line
--- 34567890123456789012 <- column
---     ^ ^ |   ^
---         ^            <- cursor position
---
---        word len:  5
---             col: 11 (12)
--- min_idx in line:  8 <- (11 + 1) - (5 - 1)
---             idx: 10
---
----@param line string The line string to search in.
----@param col integer The cursors column position.
----@param word string The word to find.
----@return integer # The start index of the word or `-1` if not found.
-local function find_word_in_line(line, col, word)
-  local min_idx = (col + 1) - (#word - 1)
-  local idx = string.find(line, word, min_idx, true) -- Uses no pattern matching.
-  return idx ~= nil and idx <= (col + 1) and idx or -1
-end
 
 ---Returns the results for the words found or their opposite
 ---in the given line near the given column.
@@ -39,29 +12,33 @@ end
 ---@param cursor swap.Cursor The cursors position.
 ---@return swap.Results # The found results.
 local function find_results(line, cursor)
-  local words = config.merge_opposite_words()
+  local words = config.get_opposite_words_by_ft()
   local results = {} ---@type swap.Results
 
   -- Finds the word or the opposite word in the line.
   for w, ow in pairs(words) do
     for _, v in ipairs({ { w, ow }, { ow, w } }) do
       local word, opposite_word = v[1], v[2]
-      local use_mask = false
+
       -- Uses a case sensitive mask if the option is activated and
       -- the word or the opposite word contains no uppercase letters.
+      local use_mask = false
       if
         config.options.opposites.use_case_sensitive_mask
         and not (util.mask.has_uppercase(word) or util.mask.has_uppercase(opposite_word))
       then
         use_mask = true
       end
-      -- Finds the word in the line.
-      local idx = find_word_in_line(use_mask and line:lower() or line, cursor.col, word)
-      if idx ~= -1 then
+
+      -- Finds the start indexes of the word in the line.
+      local start_idxs = core.find_str_in_line(use_mask and line:lower() or line, cursor, word)
+
+      -- Iterates over the found start indexes.
+      for match_idx, start_idx in ipairs(start_idxs) do
         -- Applies the case sensitive mask if the option is activated.
         if use_mask then
           -- Gets the original word.
-          word = string.sub(line, idx, idx + #word - 1)
+          word = string.sub(line, start_idx, start_idx + #word - 1)
           local mask = util.mask.get_case_sensitive_mask(word)
           opposite_word = util.mask.apply_case_sensitive_mask(opposite_word, mask)
         end
@@ -70,9 +47,13 @@ local function find_results(line, cursor)
         table.insert(results, {
           str = word,
           new_str = opposite_word,
-          start_idx = idx,
+          start_idx = start_idx,
           cursor = cursor,
           module = 'opposites',
+          opts = {
+            -- Sets the match index if there are overlapping matches.
+            overlapping_match_idx = (#start_idxs > 1 and match_idx or nil),
+          },
         })
       end
     end
