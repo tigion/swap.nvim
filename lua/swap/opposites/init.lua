@@ -31,7 +31,7 @@ local function find_results(line, cursor)
       end
 
       -- Finds the start indexes of the word in the line.
-      local start_idxs = core.find_str_in_line(use_mask and line:lower() or line, cursor, word)
+      local start_idxs = core.find_str_in_line(use_mask and line:lower() or line, word, cursor)
 
       -- Iterates over the found start indexes.
       for match_idx, start_idx in ipairs(start_idxs) do

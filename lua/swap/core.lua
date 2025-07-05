@@ -35,10 +35,10 @@ local M = {}
 --         ^            <- cursor position
 --
 ---@param line string The line string to search in.
----@param cursor swap.Cursor The cursors position.
 ---@param str string The string to find.
+---@param cursor swap.Cursor The cursors position.
 ---@return integer[] # The start indexes of the found string or empty if nothing found.
-function M.find_str_in_line(line, cursor, str)
+function M.find_str_in_line(line, str, cursor)
   -- Converts index from column (0-based) to string (1-based).
   local col_idx = cursor.col + 1
   -- The minimum start index to start searching from.
@@ -62,6 +62,12 @@ function M.find_str_in_line(line, cursor, str)
 
   return start_idxs
 end
+
+-- function M.find_pattern_in_line(line, pattern, cursor)
+--   local start_idx = string.find(line, pattern, cursor.col + 1, false) -- Uses pattern matching.
+--   if start_idx == nil then return false end
+--   return start_idx
+-- end
 
 ---Replaces a string in a line.
 ---@param line string The line to replace in.

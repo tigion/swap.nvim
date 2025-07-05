@@ -30,7 +30,7 @@ local function find_results(line, cursor)
     -- Iterates over the words in the word chain.
     for word_idx, word in ipairs(word_chain) do
       -- Finds the start indexes of the word in the line.
-      local start_idxs = core.find_str_in_line(use_mask and line:lower() or line, cursor, word)
+      local start_idxs = core.find_str_in_line(use_mask and line:lower() or line, word, cursor)
 
       if #start_idxs > 0 then
         -- Gets the next word from the word chain.
