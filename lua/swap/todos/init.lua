@@ -3,26 +3,26 @@ local notify = require('swap.notify')
 local util = require('swap.util')
 
 -- TODO:
--- - [ ] Allow multiple default or filetype specific todo syntaxes.
+-- - [ ] Allow multiple default or filetype specific todo patterns.
 -- - [ ] Add better state position identification.
 
 ---@class swap.todos
 local M = {}
 
----@class swap.TodoSyntax
+---@class swap.TodoPattern
 ---@field pattern string The pattern to search for.
 ---@field states string[] The states to switch between.
 ---@field state_pos_offset integer The offset off the end index for the state position.
 
----@alias swap.TodoSyntaxes swap.TodoSyntax[]
----@alias swap.TodoSyntaxByFt table<string, swap.TodoSyntax>
+---@alias swap.TodoPatterns swap.TodoPattern[]
+---@alias swap.TodoPatternByFt table<string, swap.TodoPattern>
 
-local todo_syntax_default = {
+local todo_pattern_default = {
   pattern = '- %[([ -x])%] ',
   states = { ' ', 'x' },
   state_pos_offset = 2,
 }
-local todo_syntax_by_ft = {
+local todo_pattern_by_ft = {
   markdown = {
     pattern = '^%s*[-*] %[([ -x])%] ',
     states = { ' ', '-', 'x' },
@@ -35,19 +35,19 @@ local todo_syntax_by_ft = {
   },
 }
 
----Returns the combined todo syntaxes of the default and
+---Returns the combined todo patterns of the default and
 ---the current file type specific ones.
----@return swap.TodoSyntaxes
-local function get_todo_syntaxes()
-  local syntaxes = {}
-  local syntax_by_ft = todo_syntax_by_ft[vim.bo.filetype]
-  if syntax_by_ft ~= nil then table.insert(syntaxes, syntax_by_ft) end
-  table.insert(syntaxes, todo_syntax_default)
-  return syntaxes
+---@return swap.TodoPatterns
+local function get_todo_patterns()
+  local patterns = {}
+  local pattern_by_ft = todo_pattern_by_ft[vim.bo.filetype]
+  if pattern_by_ft ~= nil then table.insert(patterns, pattern_by_ft) end
+  table.insert(patterns, todo_pattern_default)
+  return patterns
 end
 
----Returns the results for the words found or their opposite
----in the given line near the given column.
+---Returns the results for the found todos in the given line.
+---Only the first match is used.
 ---@param line string The line string to search in.
 ---@param cursor swap.Cursor The cursors position.
 ---@return swap.Results # The found results.
@@ -55,7 +55,7 @@ local function find_results(line, cursor)
   local results = {} ---@type swap.Results
 
   -- Gets the filetype specified todo syntaxes.
-  local syntaxes = get_todo_syntaxes()
+  local syntaxes = get_todo_patterns()
 
   -- Searches for the todo syntax in the line.
   -- The first match is used.
