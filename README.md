@@ -51,7 +51,7 @@ Other similar or better plugins are:
   - Adapts the capitalization of the replaced word.
 - ⚠️ **Switches between naming conventions** (see [cases]).
   - e.g. `foo_bar` -> `fooBar` -> `FooBar` -> `foo_bar`
-- ⚠️ **Switches through todo states** (see [todos]).
+- **Switches through todo states** (see [todos]).
   - e.g. `- [ ] foo` -> `- [x] foo`
 
 If several results are found, the user is asked which result to switch to.
@@ -114,7 +114,7 @@ Example:
 ```lua
 opts = {
   all = {
-    -- modules = { 'opposites', 'chains' }, -- defaults
+    -- modules = { 'opposites', 'todos' }, -- defaults
     modules = { 'opposites', 'chains', 'cases', 'todos' },
   },
 }
@@ -293,9 +293,6 @@ Examples:
 
 [todos]: #todos
 
-> [!WARNING]
-> This feature is work in progress.
-
 Call `require('swap').todos.switch()` to switch through the todo states.
 
 Supported default todo syntaxes:
@@ -387,7 +384,7 @@ local defaults = {
   max_line_length = 1000,
   ignore_overlapping_matches = true,
   all = {
-    modules = { 'opposites', 'chains' },
+    modules = { 'opposites', 'todos' },
   },
   opposites = {
     use_case_sensitive_mask = true,

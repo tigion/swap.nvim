@@ -55,7 +55,7 @@ local defaults = {
   max_line_length = 1000,
   ignore_overlapping_matches = true,
   all = {
-    modules = { 'opposites', 'chains' },
+    modules = { 'opposites', 'todos' },
   },
   opposites = {
     use_case_sensitive_mask = true,

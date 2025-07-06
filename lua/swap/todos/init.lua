@@ -18,7 +18,7 @@ local M = {}
 ---@alias swap.TodoPatternByFt table<string, swap.TodoPattern>
 
 local todo_pattern_default = {
-  pattern = '- %[([ -x])%] ',
+  pattern = '- %[([ x])%] ',
   states = { ' ', 'x' },
   state_pos_offset = 2,
 }
