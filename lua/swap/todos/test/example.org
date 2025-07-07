@@ -1,0 +1,12 @@
+* Tests
+
+- States:
+  - not checked: `[ ]`
+  - partially checked: `[-]`
+  - checked: `[X]`
+
+** Level
+
+- [ ] I am a todo
+  - [ ] I am a todo
+    - [ ] I am a todo

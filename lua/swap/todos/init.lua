@@ -2,48 +2,61 @@ local config = require('swap.config')
 local notify = require('swap.notify')
 local util = require('swap.util')
 
--- TODO:
--- - [ ] Allow multiple default or filetype specific todo patterns.
--- - [ ] Add better state position identification.
-
 ---@class swap.todos
 local M = {}
 
----@class swap.TodoPattern
----@field pattern string The pattern to search for.
----@field states string[] The states to switch between.
----@field state_pos_offset integer The offset off the end index for the state position.
+---@class swap.TodosStates
+---@field switch string[] The states to switch between.
+---@field find? string[] The extra states to find.
 
----@alias swap.TodoPatterns swap.TodoPattern[]
----@alias swap.TodoPatternByFt table<string, swap.TodoPattern>
+---@class swap.TodosPattern
+---@field before string The capture before the state.
+---@field state string The capture of the state.
+---@field after string The capture after the state.
 
-local todo_pattern_default = {
-  pattern = '- %[([ x])%] ',
-  states = { ' ', 'x' },
-  state_pos_offset = 2,
+---@class swap.TodosSyntax
+---@field pattern swap.TodosPattern The pattern to search for.
+---@field states swap.TodosStates The states to find and switch between.
+
+---@alias swap.TodosSyntaxByFt table<string, swap.TodosSyntax>
+---@alias swap.TodosSyntaxes swap.TodosSyntax[]
+
+---@type swap.TodosSyntax
+local default_todos_syntax = {
+  pattern = { before = '(- %[)', state = '([^%[%]]+)', after = '(%] )' },
+  states = { switch = { ' ', 'x' } },
 }
-local todo_pattern_by_ft = {
+
+---@type swap.TodosSyntaxByFt
+local todo_syntax_by_ft = {
   markdown = {
-    pattern = '^%s*[-*] %[([ -x])%] ',
-    states = { ' ', '-', 'x' },
-    state_pos_offset = 2,
+    pattern = { before = '([-*+]%s+%[)', state = '([^%[%]]+)', after = '(%] )' },
+    states = { switch = { ' ', 'x' } },
   },
   asciidoc = {
-    pattern = '^%s*[-*]%** %[([ *x])%] ',
-    states = { ' ', 'x' },
-    state_pos_offset = 2,
+    pattern = { before = '([-*]%**%s+%[)', state = '([^%[%]]+)', after = '(%] )' },
+    states = { switch = { ' ', 'x' }, find = { '*' } },
+  },
+  org = {
+    pattern = { before = '(-%s+%[)', state = '([^%[%]]+)', after = '(%] )' },
+    states = { switch = { ' ', '-', 'X' }, find = { 'x' } },
   },
 }
 
----Returns the combined todo patterns of the default and
----the current file type specific ones.
----@return swap.TodoPatterns
-local function get_todo_patterns()
-  local patterns = {}
-  local pattern_by_ft = todo_pattern_by_ft[vim.bo.filetype]
-  if pattern_by_ft ~= nil then table.insert(patterns, pattern_by_ft) end
-  table.insert(patterns, todo_pattern_default)
-  return patterns
+---Returns the combined todo syntaxes of the file type specific and standard ones.
+---@return swap.TodosSyntaxes
+local function get_todo_syntaxes()
+  local filetype = vim.bo.filetype
+  local syntaxes = {}
+
+  -- Adds the filetype specific syntax.
+  local todo_syntax = todo_syntax_by_ft[filetype]
+  if todo_syntax ~= nil then table.insert(syntaxes, todo_syntax) end
+
+  -- Adds the default syntax as fallback.
+  table.insert(syntaxes, default_todos_syntax)
+
+  return syntaxes
 end
 
 ---Returns the results for the found todos in the given line.
@@ -55,25 +68,37 @@ local function find_results(line, cursor)
   local results = {} ---@type swap.Results
 
   -- Gets the filetype specified todo syntaxes.
-  local syntaxes = get_todo_patterns()
+  local syntaxes = get_todo_syntaxes()
 
   -- Searches for the todo syntax in the line.
   -- The first match is used.
   for _, syntax in ipairs(syntaxes) do
-    local start_idx, end_idx, state = string.find(line, syntax.pattern)
-    if start_idx ~= nil then
-      -- Sets start index to the state position between the brackets.
-      start_idx = end_idx - syntax.state_pos_offset
+    -- Gets the states to switch between and the pattern to search for.
+    local states = syntax.states.switch
+    local pattern = syntax.pattern.before .. syntax.pattern.state .. syntax.pattern.after
 
-      -- Sets the next state.
-      local idx = util.table.find(syntax.states, state)
-      local new_state = syntax.states[next(syntax.states, idx) or next(syntax.states)]
+    -- Finds the first match in the line.
+    local start_idx, end_idx, capture_before, capture_state, capture_after = string.find(line, pattern)
+
+    -- Extends a deep copy of the states with the extra states to find,
+    -- if there are more states to find than to switch between.
+    local states_find = vim.list_extend(vim.deepcopy(states), syntax.states.find or {})
+
+    -- Checks if a todo pattern and supported state was found.
+    if start_idx ~= nil and capture_state ~= nil and vim.tbl_contains(states_find, capture_state) then
+      -- Gets the state and the start index of the state.
+      local state = capture_state
+      local state_start_idx = start_idx + #capture_before
+
+      -- Gets the next state.
+      local idx = util.table.find(states, state)
+      local next_state = states[next(states, idx) or next(states)]
 
       -- Adds the result to the results list.
       table.insert(results, {
         str = state,
-        new_str = new_state,
-        start_idx = start_idx,
+        new_str = next_state,
+        start_idx = state_start_idx,
         cursor = cursor,
         module = 'todos',
         opts = {
@@ -82,7 +107,7 @@ local function find_results(line, cursor)
       })
 
       -- Stops searching after the first match.
-      break
+      return results
     end
   end
 

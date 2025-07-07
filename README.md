@@ -295,22 +295,24 @@ Examples:
 
 Call `require('swap').todos.switch()` to switch through the todo states.
 
-Supported default todo syntaxes:
+Supported default todo syntax:
 
-- `- [ ] foo` with the states `[ ]` and `[x]` also within lines and comments
+- `- [ ] foo` with the states `[ ]`, `[x]`
 
-Supported filetype specific todo syntaxes:
+Supported filetype specific todo syntax:
 
 - [Markdown Task-Lists](https://www.markdownguide.org/extended-syntax/#task-lists):
-  `- [ ] foo` with the states `[ ]`, `[-]` and `[x]`
+  `- [ ] foo` with the states `[ ]`, `[x]`
 - [AsciiDoc Checklist](https://docs.asciidoctor.org/asciidoc/latest/lists/checklist/):
-  `* [ ] foo` with the states `[ ]` and `[x]`
+  `* [ ] foo` with the states `[ ]`, `[x]` (`[*]`)
+- [Org Mode Checkboxes](https://orgmode.org/manual/Checkboxes.html):
+  `- [ ] foo` with the states `[ ]`, `[-]`, `[X]` (`[x]`)
 
 Rules:
 
 - The cursor can be anywhere in the line.
 - The first match is used.
-- The filetype specific todo syntaxes have priority over the default todo syntaxes.
+- The filetype specific todo syntax have priority over the default todo syntax.
 
 &nbsp;
 

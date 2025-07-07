@@ -1,0 +1,44 @@
+= Tests
+
+* States:
+** not checked: `[ ]`
+** checked: `[x]`
+
+== Level
+
+* [ ] I am a todo
+** [ ] I am a todo
+*** [ ] I am a todo
+
+== Types
+
+- [ ] I am a todo
+* [ ] I am a todo
+** [ ] I am a todo
+
+== Quotes
+
+> I am a quote
+>
+> * [ ] I am a todo
+>
+> > * [ ] I am a todo
+> >
+> > > * [ ] I am a todo
+> > > ** [ ] I am a todo
+
+== Tables
+
+.table 1
+[cols="1,1a,1"]
+|===
+| x | * [ ] I am a todo | x
+|===
+
+.table 2
+[cols="1,1,1"]
+|===
+| x
+a| * [ ] I am a todo
+| x
+|===
