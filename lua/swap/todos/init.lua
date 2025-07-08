@@ -22,7 +22,7 @@ local M = {}
 ---@alias swap.TodosSyntaxes swap.TodosSyntax[]
 
 ---@type swap.TodosSyntax
-local default_todos_syntax = {
+local default_todo_syntax = {
   pattern = { before = '(- %[)', state = '([^%[%]]+)', after = '(%] )' },
   states = { switch = { ' ', 'x' } },
 }
@@ -54,7 +54,7 @@ local function get_todo_syntaxes()
   if todo_syntax ~= nil then table.insert(syntaxes, todo_syntax) end
 
   -- Adds the default syntax as fallback.
-  table.insert(syntaxes, default_todos_syntax)
+  table.insert(syntaxes, default_todo_syntax)
 
   return syntaxes
 end
