@@ -7,7 +7,7 @@ local cases = require('swap.cases')
 local chains = require('swap.chains')
 local todos = require('swap.todos')
 
----@class opposites
+---@class swap
 local M = {}
 
 -- Exports the module.
