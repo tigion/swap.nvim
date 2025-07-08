@@ -43,6 +43,7 @@ function M.find_str_in_line(line, str, cursor)
   local col_idx = cursor.col + 1
   -- The minimum start index to start searching from.
   local min_start_idx = col_idx - (#str - 1)
+  if min_start_idx < 1 then min_start_idx = 1 end
 
   local start_idx -- The found start index.
   local start_idxs = {} -- The found start indexes.
