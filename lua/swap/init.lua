@@ -49,23 +49,24 @@ end
 ---@param module? swap.ConfigModule The module to use.
 ---@param line string The current line string.
 ---@param cursor swap.Cursor The current cursor position.
----@param quiet? boolean Whether to quiet the notifications.
+--- -- @param quiet? boolean Whether to quiet the notifications.
+---@param opts? table The options for the switch.
 ---@return swap.Results # The found results.
-local function use_module(module, line, cursor, quiet)
-  quiet = quiet or false
+local function use_module(module, line, cursor, opts)
+  opts = opts or {}
   local results = {}
 
   if module == nil then
     -- Uses all allowed modules.
     local allowed_modules = config.options.all.modules or {}
     for _, m in ipairs(allowed_modules) do
-      local module_results = use_module(m, line, cursor, true)
+      local module_results = use_module(m, line, cursor, { quiet = true, case_id = opts.case_id })
       if module_results ~= nil then vim.list_extend(results, module_results) end
     end
     if #results < 1 then
       -- No results found.
       if config.options.notify.not_found then notify.info('Nothing supported found', cursor) end
-    elseif not quiet and config.options.notify.found then
+    elseif not opts.quiet and config.options.notify.found then
       -- Results found.
       local new_strs = {}
       for _, result in ipairs(results) do
@@ -75,16 +76,16 @@ local function use_module(module, line, cursor, quiet)
     end
   elseif module == 'opposites' then
     -- Uses the opposites module.
-    results = opposites.get_results(line, cursor, quiet)
+    results = opposites.get_results(line, cursor, opts.quiet)
   elseif module == 'cases' then
     -- Uses the cases module.
-    results = cases.get_results(line, cursor, quiet)
+    results = cases.get_results(line, cursor, opts.quiet, opts.case_id)
   elseif module == 'chains' then
     -- Uses the chains module.
-    results = chains.get_results(line, cursor, quiet)
+    results = chains.get_results(line, cursor, opts.quiet)
   elseif module == 'todos' then
     -- Uses the todos module.
-    results = todos.get_results(line, cursor, quiet)
+    results = todos.get_results(line, cursor, opts.quiet)
   end
 
   return results
@@ -92,7 +93,8 @@ end
 
 ---Switches string under the cursor with the given module.
 ---@param module? swap.ConfigModule The module to use.
-local function switch(module)
+---@param opts? table The options for the switch.
+local function switch(module, opts)
   -- Gets the current line string and the current cursor position.
   local line = vim.api.nvim_get_current_line()
   local row, col = unpack(vim.api.nvim_win_get_cursor(0))
@@ -107,7 +109,7 @@ local function switch(module)
   end
 
   -- Gets the results of the used module.
-  local results = use_module(module, line, cursor)
+  local results = use_module(module, line, cursor, opts)
   -- Handles the results to replace the string in the current line.
   core.handle_results(results)
 end
@@ -127,7 +129,7 @@ M.chains = {
 
 -- Cases
 M.cases = {
-  switch = function() switch('cases') end,
+  switch = function(case_id) switch('cases', { case_id = case_id }) end,
 }
 
 -- Todos

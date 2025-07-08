@@ -5,8 +5,13 @@ a **word** (_string_) under the cursor or a **pattern** in the current line.
 For example, if the cursor is on `enable` it will switch to `disable` and vice
 versa (see [Features](#features)).
 
-> [!WARNING]
+> [!NOTE]
 > This plugin is based on my personal needs. Work in progress. 🚀
+
+Other similar or better plugins are:
+
+- [nguyenvukhang/nvim-toggler](https://github.com/nguyenvukhang/nvim-toggler)
+- [AndrewRadev/switch.vim](https://github.com/AndrewRadev/switch.vim)
 
 > [!CAUTION]
 > **BREAKING CHANGES** (2025-07-03): The name has changed.
@@ -16,11 +21,6 @@ versa (see [Features](#features)).
 >
 > More information and older notes can be found in the
 > [Breaking Changes](#️-breaking-changes) section.
-
-Other similar or better plugins are:
-
-- [nguyenvukhang/nvim-toggler](https://github.com/nguyenvukhang/nvim-toggler)
-- [AndrewRadev/switch.vim](https://github.com/AndrewRadev/switch.vim)
 
 **Table of Contents**:
 
@@ -75,6 +75,7 @@ return {
     -- { '<Leader>I', function() require('swap').opposites.switch() end, desc = 'Swap to opposite word' },
     -- { '<Leader>I', function() require('swap').chains.switch() end, desc = 'Swap to next word' },
     -- { '<Leader>I', function() require('swap').cases.switch() end, desc = 'Swap naming convention' },
+    -- { '<Leader>I', function() require('swap').cases.switch('pascal') end, desc = 'Swap to PascalCase' },
     -- { '<Leader>I', function() require('swap').todos.switch() end, desc = 'Swap todo state' },
   },
   ---@type swap.Config
@@ -86,13 +87,14 @@ return {
 
 ## Usage
 
-| Function                             | Description                                                     | Module      |
-| ------------------------------------ | --------------------------------------------------------------- | ----------- |
-| `require('swap').switch()`           | Uses all allowed modules ([config](#configure-allowed-modules)) |             |
-| `require('swap').opposites.switch()` | Switches between opposite words                                 | [opposites] |
-| `require('swap').chains.switch()`    | Switches through word chains                                    | [chains]    |
-| `require('swap').cases.switch()`     | Switches between naming conventions                             | [cases]     |
-| `require('swap').todos.switch()`     | Switches through todo states                                    | [todos]     |
+| Function                                    | Description                                                     | Module      |
+| ------------------------------------------- | --------------------------------------------------------------- | ----------- |
+| `require('swap').switch()`                  | Uses all allowed modules ([config](#configure-allowed-modules)) |             |
+| `require('swap').opposites.switch()`        | Switches between opposite words                                 | [opposites] |
+| `require('swap').chains.switch()`           | Switches through word chains                                    | [chains]    |
+| `require('swap').cases.switch()`            | Switches between naming conventions                             | [cases]     |
+| `require('swap').cases.switch('<case_id>')` | Switches to the given naming convention                         | [cases]     |
+| `require('swap').todos.switch()`            | Switches through todo states                                    | [todos]     |
 
 Call the functions directly or use them in a key mapping.
 
@@ -234,7 +236,7 @@ Rules:
 
 > [!WARNING]
 > This feature is experimental and work in progress.
-> The word identification is very limited.
+> The word identification is very limited (see [Limits](#limits)).
 
 Call `require('swap').cases.switch()` to switch to the next case type of the
 word under the cursor.
@@ -245,10 +247,10 @@ Example:
 
 Supported case types are:
 
-- snake_case, SCREAMING_SNAKE_CASE
-- kebab-case, SCREAMING-KEBAB-CASE
-- camelCase
-- PascalCase
+- `snake_case`, `SCREAMING_SNAKE_CASE`
+- `kebab-case`, `SCREAMING-KEBAB-CASE`
+- `camelCase`
+- `PascalCase`
 
 The allowed case types and the switch order can be configured in the `types`
 table in the `cases` part of the `swap.Config` table.
@@ -269,6 +271,16 @@ opts = {
   },
 }
 ```
+
+> [!TIP]
+> With a given case type id in `require('swap').cases.switch('<case_id>')` you
+> can also directly switch to an case type. The supported case type ids
+> are: `snake`, `screaming_snake`, `kebab`, `screaming_kebab`, `camel` and
+> `pascal`.
+>
+> Example with `require('swap').cases.switch('pascal')`:
+>
+> - foo_bar -> FooBar
 
 #### Limits
 

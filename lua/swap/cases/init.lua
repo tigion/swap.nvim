@@ -146,15 +146,20 @@ local function get_next_case_type_id(case_type_id)
   return new_case_type_id
 end
 
----Switches the given word to its next case type.
+---Switches the given word to its next case type or the given case type.
 ---
----Example:
+---Example: `switch_to_next_or_given_case_type('foo_bar')`
 ---
 ---    foo_bar -> FOO_BAR -> foo-bar -> FOO-BAR -> fooBar -> FooBar -> foo_bar
 ---
+---Example: `switch_to_next_or_given_case_type('foo_bar', 'pascal')`
+---
+---    foo_bar -> FooBar
+---
 ---@param word string The word to switch.
----@return string|boolean # The next case type or false if not supported.
-local function switch_to_next_case_type(word)
+---@param case_id? swap.ConfigCasesId The case id for the new case type or `nil` for the next case type.
+---@return string|boolean # Returns the word with the next or new case type or false if not supported.
+local function switch_to_next_or_given_case_type(word, case_id)
   -- Exits if word is nil or empty.
   if word == nil or word == '' then return false end
 
@@ -163,22 +168,29 @@ local function switch_to_next_case_type(word)
   local result = parse_allowed_case_types(word)
   if result == false or #result.parts < 2 then return false end
 
-  -- Returns converted parts based on next case type.
-  local next_case_type_id = get_next_case_type_id(result.case_type_id)
-  if cases[next_case_type_id] then
-    local converter = cases[next_case_type_id].converter
+  -- Gets the next case type or use the given case type.
+  local new_case_type_id = case_id == nil and get_next_case_type_id(result.case_type_id) or case_id
+
+  -- If the new case type is the same as the current one, a change is not necessary.
+  -- Returns the word as it is to handle the notification in the caller.
+  if new_case_type_id == result.case_type_id then return word end
+
+  -- Returns converted parts based on the new case type.
+  if cases[new_case_type_id] then
+    local converter = cases[new_case_type_id].converter
     if type(converter) == 'function' then return converter(result.parts) end
   end
 
   return false
 end
 
----Returns the results for the found word and its next case type.
+---Returns the results for the found word and its next or new case type.
 ---@param line string The line string to search in.
 ---@param cursor swap.Cursor The cursors position.
 ---@param quiet? boolean Whether to quiet the notifications.
+---@param case_id? swap.ConfigCasesId The case id for the new case type or `nil` for the next case type.
 ---@return swap.Results # The found results.
-local function find_results(line, cursor, quiet)
+local function find_results(line, cursor, quiet, case_id)
   local results = {}
 
   -- Finds the word in the current line.
@@ -188,11 +200,16 @@ local function find_results(line, cursor, quiet)
     return {}
   end
 
-  -- Gets the next case type and checks if the word is supported.
-  local new_word = switch_to_next_case_type(word)
+  -- Gets the new case type and checks if the word is supported.
+  local new_word = switch_to_next_or_given_case_type(word, case_id)
   if new_word == false then
     if not quiet and config.options.notify.not_found then
       notify.info('`' .. word .. '` has an unsupported case type', cursor)
+    end
+    return {}
+  elseif new_word == word then
+    if not quiet and config.options.notify.not_found then
+      notify.info('`' .. word .. '` already has the case type' .. (case_id and ' `' .. case_id .. '`' or ''), cursor)
     end
     return {}
   end
@@ -213,12 +230,13 @@ end
 ---@param line string The line string to search in.
 ---@param cursor swap.Cursor The cursors position.
 ---@param quiet? boolean Whether to quiet the notifications.
+---@param case_id? swap.ConfigCasesId The case id for the new case type or `nil` for the next case type.
 ---@return swap.Results # The found results.
-function M.get_results(line, cursor, quiet)
+function M.get_results(line, cursor, quiet, case_id)
   quiet = quiet or false
 
   -- Gets the found results.
-  local results = find_results(line, cursor, quiet)
+  local results = find_results(line, cursor, quiet, case_id)
 
   -- Checks if we found any results.
   if #results > 0 and not quiet and config.options.notify.found then
