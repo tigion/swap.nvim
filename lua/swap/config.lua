@@ -104,8 +104,9 @@ local defaults = {
   },
 }
 
+---Sets the default config
 ---@type swap.Config
-M.options = defaults -- vim.deepcopy(defaults)
+M.options = vim.deepcopy(defaults) -- Preserves the original defaults.
 
 ---Cleans up redundant opposite words.
 ---@param words swap.ConfigOppositesWords
@@ -137,8 +138,8 @@ function M.setup(opts)
   opts = opts or {}
 
   -- Clears the default opposite words if the user doesn't want to use them.
-  if opts.opposites.use_default_words == false then M.options.opposites.words = {} end
-  if opts.opposites.use_default_words_by_ft == false then M.options.opposites.words_by_ft = {} end
+  if opts.opposites.use_default_words == false then defaults.opposites.words = {} end
+  if opts.opposites.use_default_words_by_ft == false then defaults.opposites.words_by_ft = {} end
 
   -- Merges the user config with the default config.
   M.options = vim.tbl_deep_extend('force', defaults, opts or {})
