@@ -69,7 +69,6 @@ If several results are found, the user is asked which result to switch to.
 ```lua
 return {
   'tigion/swap.nvim',
-  -- event = { 'BufReadPost', 'BufNewFile' },
   keys = {
     { '<Leader>i', function() require('swap').switch() end, desc = 'Swap word' },
     -- { '<Leader>I', function() require('swap').opposites.switch() end, desc = 'Swap to opposite word' },
@@ -78,6 +77,7 @@ return {
     -- { '<Leader>I', function() require('swap').cases.switch('pascal') end, desc = 'Swap to PascalCase' },
     -- { '<Leader>I', function() require('swap').todos.switch() end, desc = 'Swap todo state' },
   },
+  ---@module 'swap'
   ---@type swap.Config
   opts = {},
 }
