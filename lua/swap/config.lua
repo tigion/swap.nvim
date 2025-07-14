@@ -1,3 +1,5 @@
+local validation = require('swap.validation')
+
 ---@class swap.config
 local M = {}
 
@@ -108,30 +110,6 @@ local defaults = {
 ---@type swap.Config
 M.options = vim.deepcopy(defaults) -- Preserves the original defaults.
 
----Cleans up redundant opposite words.
----@param words swap.ConfigOppositesWords
----@return swap.ConfigOppositesWords
-local function cleanup_opposite_words(words)
-  for w, ow in pairs(words) do
-    if w == words[w] then
-      words[w] = nil
-    elseif words[ow] and words[ow] == w then
-      words[ow] = nil
-    end
-  end
-  return words
-end
-
----Cleans up redundant opposite words by ft.
----@param words swap.ConfigOppositesWordsByFt
----@return swap.ConfigOppositesWordsByFt
-local function cleanup_opposite_words_by_ft(words)
-  for _, opposites in pairs(words) do
-    opposites = cleanup_opposite_words(opposites)
-  end
-  return words
-end
-
 ---Setups the plugin.
 ---@param opts? swap.Config
 function M.setup(opts)
@@ -145,11 +123,8 @@ function M.setup(opts)
   -- Merges the user config with the default config.
   M.options = vim.tbl_deep_extend('force', new_defaults, opts or {})
 
-  -- Cleans up redundant opposite words.
-  M.options.opposites.words = cleanup_opposite_words(M.options.opposites.words)
-  M.options.opposites.words_by_ft = cleanup_opposite_words_by_ft(M.options.opposites.words_by_ft)
-
-  -- TODO: check all config values
+  -- Validates and cleans up the configuration options.
+  validation.validate_and_cleanup_options(M.options)
 end
 
 ---Returns the merged opposites words from the default and
@@ -162,8 +137,8 @@ function M.get_opposite_words_by_ft()
   if words_by_ft[filetype] then
     -- Adds or replaces file type-dependent opposites.
     words = vim.tbl_deep_extend('force', words, words_by_ft[filetype])
-    -- Cleans up redundant opposite words.
-    words = cleanup_opposite_words(words)
+    -- Cleans up opposite words.
+    words = validation.cleanup_opposite_words(words)
   end
   return words
 end
@@ -174,7 +149,12 @@ end
 function M.get_word_chains_by_ft()
   local word_chains = vim.deepcopy(M.options.chains.words) or {}
   local word_chains_by_ft = M.options.chains.words_by_ft[vim.bo.filetype]
-  if word_chains_by_ft then vim.list_extend(word_chains, word_chains_by_ft) end
+  if word_chains_by_ft then
+    -- Adds file type-dependent word chains.
+    vim.list_extend(word_chains, word_chains_by_ft)
+    -- Cleans up word chains.
+    word_chains = validation.cleanup_word_chains(word_chains)
+  end
   return word_chains
 end
 
