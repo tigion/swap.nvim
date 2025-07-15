@@ -24,7 +24,7 @@ local test_cases = {
   {
     id = 'tc01',
     name = 'cleanup_modules()',
-    func = 'cleanup_modules',
+    func = validation.cleanup_modules,
     inputs = {
       { 'opposites', 'cases', 'chains', 'todos' },
       { 'opposites', 'cases', 'chains', 'cases', 'todos' },
@@ -49,7 +49,7 @@ local test_cases = {
   {
     id = 'tc03',
     name = 'cleanup_opposite_words_by_ft()',
-    func = 'cleanup_opposite_words_by_ft',
+    func = validation.cleanup_opposite_words_by_ft,
     inputs = {
       { ['lua'] = { ['=='] = '~=' }, ['sql'] = { ['asc'] = 'desc' } },
       { ['lua'] = { ['=='] = '~=' }, ['sql'] = { ['asc'] = 'desc', ['desc'] = 'asc' } },
@@ -87,7 +87,7 @@ local test_cases = {
   {
     id = 'tc06',
     name = 'cleanup_word_chains_by_ft()',
-    func = 'cleanup_word_chains_by_ft',
+    func = validation.cleanup_word_chains_by_ft,
     inputs = {
       {
         lua = { { 'A', 'B', 'C' }, { 'foo', 'bar', 'baz' } },
@@ -114,7 +114,7 @@ local test_cases = {
   {
     id = 'tc07',
     name = 'cleanup_case_types()',
-    func = 'cleanup_case_types',
+    func = validation.cleanup_case_types,
     inputs = {
       { 'snake', 'screaming_snake', 'kebab', 'screaming_kebab', 'camel', 'pascal' },
       { 'snake', 'screaming_snake', 'kebab', 'screaming_kebab', 'unsupported', 'camel', 'pascal' },

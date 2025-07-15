@@ -3,7 +3,7 @@ local M = {}
 
 ---Validates the option types.
 ---@param opts swap.Config
-local function validate_types(opts)
+function M.validate_types(opts)
   vim.validate('options', opts, 'table')
   -- Base
   vim.validate('max_line_length', opts.max_line_length, 'number')
@@ -35,7 +35,7 @@ end
 ---Cleans up redundant or unsupported modules.
 ---@param modules swap.ConfigModule[]
 ---@return swap.ConfigModule[]
-local function cleanup_modules(modules)
+function M.cleanup_modules(modules)
   ---@type swap.ConfigModule[]
   local supported_modules = { 'opposites', 'cases', 'chains', 'todos' }
   local cleaned_modules = {}
@@ -76,7 +76,7 @@ end
 ---Cleans up redundant opposite words by ft.
 ---@param words swap.ConfigOppositesWordsByFt
 ---@return swap.ConfigOppositesWordsByFt
-local function cleanup_opposite_words_by_ft(words)
+function M.cleanup_opposite_words_by_ft(words)
   for ft, opposites in pairs(words) do
     -- opposites = M.cleanup_opposite_words(opposites)
     words[ft] = M.cleanup_opposite_words(opposites)
@@ -121,7 +121,7 @@ end
 ---Cleans up unsupported or redundant word chains by ft.
 ---@param chains_by_ft swap.ConfigChainsWordsByFt
 ---@return swap.ConfigChainsWordsByFt
-local function cleanup_word_chains_by_ft(chains_by_ft)
+function M.cleanup_word_chains_by_ft(chains_by_ft)
   for ft, chains in pairs(chains_by_ft) do
     chains_by_ft[ft] = M.cleanup_word_chains(chains)
   end
@@ -131,8 +131,7 @@ end
 ---Cleans up unsupported or redundant case types.
 ---@param types swap.ConfigCasesTypes
 ---@return swap.ConfigCasesTypes
----@private
-local function cleanup_case_types(types)
+function M.cleanup_case_types(types)
   ---@type swap.ConfigCasesTypes
   local supported_types = { 'snake', 'screaming_snake', 'kebab', 'screaming_kebab', 'camel', 'pascal' }
   local cleaned_types = {}
@@ -144,59 +143,18 @@ local function cleanup_case_types(types)
   return cleaned_types
 end
 
----Validates and cleans up the configuration options.
----@param opts swap.Config
-function M.validate_and_cleanup_options(opts)
-  -- Validates the option types.
-  validate_types(opts)
-
-  -- Cleans up modules.
-  opts.all.modules = cleanup_modules(opts.all.modules)
-
-  -- Cleans up opposite words.
-  opts.opposites.words = M.cleanup_opposite_words(opts.opposites.words)
-  opts.opposites.words_by_ft = cleanup_opposite_words_by_ft(opts.opposites.words_by_ft)
-
-  -- Cleans up word chains.
-  opts.chains.words = M.cleanup_word_chains(opts.chains.words)
-  opts.chains.words_by_ft = cleanup_word_chains_by_ft(opts.chains.words_by_ft)
-
-  -- Cleans up cases types.
-  opts.cases.types = cleanup_case_types(opts.cases.types)
-end
-
 ---Test interface for local functions.
 ---@param func_name string
 ---@param ... any
 ---@return any
 function M.test(func_name, ...)
   local gateway = {
-    cleanup_modules = cleanup_modules,
     cleanup_words = cleanup_words,
-    cleanup_opposite_words_by_ft = cleanup_opposite_words_by_ft,
-    cleanup_word_chains_by_ft = cleanup_word_chains_by_ft,
-    cleanup_case_types = cleanup_case_types,
   }
   if type(gateway[func_name]) ~= 'function' then
     error("Test interface gateway for function name not found: '" .. func_name .. "'")
   end
   return gateway[func_name](...)
 end
-
--- -- Exposes private functions for testing.
--- if _SWAP_NVIM_UNIT_TEST == true then
---   local leak = {
---     _cleanup_modules = cleanup_modules,
---     _cleanup_opposite_words_by_ft = cleanup_opposite_words_by_ft,
---     _cleanup_words = cleanup_words,
---     _cleanup_word_chains_by_ft = cleanup_word_chains_by_ft,
---     _cleanup_case_types = cleanup_case_types,
---   }
---   M._prepare_unit_test = function()
---     for k, v in pairs(leak) do
---       M[k] = v
---     end
---   end
--- end
 
 return M

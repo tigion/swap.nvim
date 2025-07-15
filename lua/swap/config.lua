@@ -123,8 +123,16 @@ function M.setup(opts)
   -- Merges the user config with the default config.
   M.options = vim.tbl_deep_extend('force', new_defaults, opts or {})
 
-  -- Validates and cleans up the configuration options.
-  validation.validate_and_cleanup_options(M.options)
+  -- Validates options types.
+  validation.validate_types(M.options)
+
+  -- Cleans up.
+  M.options.all.modules = validation.cleanup_modules(M.options.all.modules)
+  M.options.opposites.words = validation.cleanup_opposite_words(M.options.opposites.words)
+  M.options.opposites.words_by_ft = validation.cleanup_opposite_words_by_ft(M.options.opposites.words_by_ft)
+  M.options.chains.words = validation.cleanup_word_chains(M.options.chains.words)
+  M.options.chains.words_by_ft = validation.cleanup_word_chains_by_ft(M.options.chains.words_by_ft)
+  M.options.cases.types = validation.cleanup_case_types(M.options.cases.types)
 end
 
 ---Returns the merged opposites words from the default and
