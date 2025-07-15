@@ -2,14 +2,7 @@
 --
 -- Run with `nvim -l test/validation.test.lua`.
 --
--- The private functions musst be exposed for testing:
---
--- ```lua
--- if _SWAP_NVIM_UNIT_TEST then
---   M._private_function = private_function
---   ...
--- end
--- ```
+-- The private functions need a test interface or musst be exposed.
 --
 -- NOTE: Hash tables are not ordered, so the order of the key/value pairs
 --       is not guaranteed.
@@ -24,13 +17,14 @@ _SWAP_NVIM_UNIT_TEST_OPTS = {
 }
 
 local validation = require('lua.swap.validation')
+-- validation._prepare_unit_test()
 
 ---Defines the test cases.
 local test_cases = {
   {
     id = 'tc01',
     name = 'cleanup_modules()',
-    func = validation._cleanup_modules,
+    func = 'cleanup_modules',
     inputs = {
       { 'opposites', 'cases', 'chains', 'todos' },
       { 'opposites', 'cases', 'chains', 'cases', 'todos' },
@@ -55,7 +49,7 @@ local test_cases = {
   {
     id = 'tc03',
     name = 'cleanup_opposite_words_by_ft()',
-    func = validation._cleanup_opposite_words_by_ft,
+    func = 'cleanup_opposite_words_by_ft',
     inputs = {
       { ['lua'] = { ['=='] = '~=' }, ['sql'] = { ['asc'] = 'desc' } },
       { ['lua'] = { ['=='] = '~=' }, ['sql'] = { ['asc'] = 'desc', ['desc'] = 'asc' } },
@@ -69,7 +63,7 @@ local test_cases = {
   {
     id = 'tc04',
     name = 'cleanup_words()',
-    func = validation._cleanup_words,
+    func = 'cleanup_words',
     inputs = {
       { 'foo', 'bar', 'baz' },
       { 'foo', 'bar', 'foo', 'baz' },
@@ -93,7 +87,7 @@ local test_cases = {
   {
     id = 'tc06',
     name = 'cleanup_word_chains_by_ft()',
-    func = validation._cleanup_word_chains_by_ft,
+    func = 'cleanup_word_chains_by_ft',
     inputs = {
       {
         lua = { { 'A', 'B', 'C' }, { 'foo', 'bar', 'baz' } },
@@ -120,7 +114,7 @@ local test_cases = {
   {
     id = 'tc07',
     name = 'cleanup_case_types()',
-    func = validation._cleanup_case_types,
+    func = 'cleanup_case_types',
     inputs = {
       { 'snake', 'screaming_snake', 'kebab', 'screaming_kebab', 'camel', 'pascal' },
       { 'snake', 'screaming_snake', 'kebab', 'screaming_kebab', 'unsupported', 'camel', 'pascal' },
@@ -172,7 +166,14 @@ local function run(title)
     -- Runs test case variants.
     for idx, input in ipairs(test_case.inputs) do
       test_variant_count = test_variant_count + 1
-      local received = test_case.func(vim.deepcopy(input))
+
+      local received = nil
+      if type(test_case.func) == 'function' then
+        received = test_case.func(vim.deepcopy(input))
+      elseif type(test_case.func) == 'string' then
+        received = validation.test(test_case.func, vim.deepcopy(input))
+      end
+
       local result = vim.deep_equal(received, test_case.expected)
       if result == true then
         passed_count = passed_count + 1

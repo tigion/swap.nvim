@@ -131,6 +131,7 @@ end
 ---Cleans up unsupported or redundant case types.
 ---@param types swap.ConfigCasesTypes
 ---@return swap.ConfigCasesTypes
+---@private
 local function cleanup_case_types(types)
   ---@type swap.ConfigCasesTypes
   local supported_types = { 'snake', 'screaming_snake', 'kebab', 'screaming_kebab', 'camel', 'pascal' }
@@ -164,12 +165,38 @@ function M.validate_and_cleanup_options(opts)
   opts.cases.types = cleanup_case_types(opts.cases.types)
 end
 
-if _SWAP_NVIM_UNIT_TEST then
-  M._cleanup_modules = cleanup_modules
-  M._cleanup_opposite_words_by_ft = cleanup_opposite_words_by_ft
-  M._cleanup_words = cleanup_words
-  M._cleanup_word_chains_by_ft = cleanup_word_chains_by_ft
-  M._cleanup_case_types = cleanup_case_types
+---Test interface for local functions.
+---@param func_name string
+---@param ... any
+---@return any
+function M.test(func_name, ...)
+  local gateway = {
+    cleanup_modules = cleanup_modules,
+    cleanup_words = cleanup_words,
+    cleanup_opposite_words_by_ft = cleanup_opposite_words_by_ft,
+    cleanup_word_chains_by_ft = cleanup_word_chains_by_ft,
+    cleanup_case_types = cleanup_case_types,
+  }
+  if type(gateway[func_name]) ~= 'function' then
+    error("Test interface gateway for function name not found: '" .. func_name .. "'")
+  end
+  return gateway[func_name](...)
 end
+
+-- -- Exposes private functions for testing.
+-- if _SWAP_NVIM_UNIT_TEST == true then
+--   local leak = {
+--     _cleanup_modules = cleanup_modules,
+--     _cleanup_opposite_words_by_ft = cleanup_opposite_words_by_ft,
+--     _cleanup_words = cleanup_words,
+--     _cleanup_word_chains_by_ft = cleanup_word_chains_by_ft,
+--     _cleanup_case_types = cleanup_case_types,
+--   }
+--   M._prepare_unit_test = function()
+--     for k, v in pairs(leak) do
+--       M[k] = v
+--     end
+--   end
+-- end
 
 return M
