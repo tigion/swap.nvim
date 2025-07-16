@@ -1,4 +1,4 @@
-local swap_validation = require('lua.swap.validation')
+local swap_validation = require('swap.validation')
 
 -- Hash tables are not ordered, so the order of the key/value pairs
 -- is not guaranteed.

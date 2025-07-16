@@ -7,10 +7,14 @@ local options = {
   verbose = false,
 }
 
+package.path = './lua/?.lua;' .. './lua/?/init.lua;' .. package.path
+
 -- The test suits to be tested.
 local test_suites = {
   require('test.validation_test'),
   require('test.util_test'),
+  require('test.core_test'),
+  require('test.opposites_test'),
 }
 
 ---The global test statistics.

@@ -158,4 +158,18 @@ function M.handle_results(results)
   end
 end
 
+---Test interface for local functions.
+---@param func_name string
+---@param ... any
+---@return any
+function M.test(func_name, ...)
+  local gateway = {
+    replace_str_in_line = replace_str_in_line,
+  }
+  if type(gateway[func_name]) ~= 'function' then
+    error("Test interface gateway for function name not found: '" .. func_name .. "'")
+  end
+  return gateway[func_name](...)
+end
+
 return M

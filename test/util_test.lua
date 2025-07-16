@@ -1,4 +1,4 @@
-local swap_util = require('lua.swap.util')
+local swap_util = require('swap.util')
 
 local M = {}
 
