@@ -1,5 +1,3 @@
-local config = require('swap.config')
-
 ---@class swap.core
 local M = {}
 
@@ -37,8 +35,10 @@ local M = {}
 ---@param line string The line string to search in.
 ---@param str string The string to find.
 ---@param cursor swap.Cursor The cursors position.
+---@param opts? table The options.
 ---@return integer[] # The start indexes of the found string or empty if nothing found.
-function M.find_str_in_line(line, str, cursor)
+function M.find_str_in_line(line, str, cursor, opts)
+  opts = opts or {}
   -- Converts index from column (0-based) to string (1-based).
   local col_idx = cursor.col + 1
   -- The minimum start index to start searching from.
@@ -56,7 +56,7 @@ function M.find_str_in_line(line, str, cursor)
     -- Adds the start index to the list of start indexes.
     table.insert(start_idxs, start_idx)
     -- Breaks if the option is set to ignore overlapping matches.
-    if config.options.ignore_overlapping_matches then break end
+    if opts.ignore_overlapping_matches then break end
     -- Sets the new minimum start index.
     min_start_idx = start_idx + 1
   end
