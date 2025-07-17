@@ -1,7 +1,7 @@
 local config = require('swap.config')
 local core = require('swap.core')
 local notify = require('swap.notify')
-local util = require('swap.util')
+local mask = require('swap.mask')
 
 ---@class swap.chains
 local M = {}
@@ -23,7 +23,7 @@ local function find_results(line, cursor)
     -- Uses a case sensitive mask if the option is activated and
     -- the words in the word chain contains no uppercase letters.
     local use_mask = false
-    if config.options.chains.use_case_sensitive_mask and not util.mask.has_uppercase_words(word_chain) then
+    if config.options.chains.use_case_sensitive_mask and not mask.has_uppercase_words(word_chain) then
       use_mask = true
     end
 
@@ -47,8 +47,8 @@ local function find_results(line, cursor)
           if use_mask then
             -- Gets the original word.
             word = string.sub(line, start_idx, start_idx + #word - 1)
-            local mask = util.mask.get_case_sensitive_mask(word)
-            next_word = util.mask.apply_case_sensitive_mask(next_word, mask)
+            local word_mask = mask.get_case_sensitive_mask(word)
+            next_word = mask.apply_case_sensitive_mask(next_word, word_mask)
           end
 
           -- Adds the result to the results list.
