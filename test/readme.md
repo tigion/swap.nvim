@@ -119,7 +119,7 @@ local options = {
 
 The tests are described in test suites with test cases and variants.
 
-## Test Suite Description
+### Test Suite Description
 
 A test suite is described in his own file `test/module_test.lua` as follows:
 
