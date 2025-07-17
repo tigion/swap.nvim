@@ -6,21 +6,19 @@ For example, if the cursor is on `enable` it will switch to `disable` and vice
 versa (see [Features](#features)).
 
 > [!NOTE]
-> This plugin is based on my personal needs. Work in progress. 🚀
+> The former name of this plugin was `nvim-opposites`. Work in progress. 🚀
+>
+> This plugin is a bit over-engineered, but I'm having a lot of fun programming
+> it and testing things out.  
+> In Germany we would say: "_Mit Kanonen auf Spatzen schießen_". 😉
 
 Other similar or better plugins are:
 
 - [nguyenvukhang/nvim-toggler](https://github.com/nguyenvukhang/nvim-toggler)
 - [AndrewRadev/switch.vim](https://github.com/AndrewRadev/switch.vim)
 
-> [!CAUTION]
-> **BREAKING CHANGES** (2025-07-03): The name has changed.
->
-> - The repo name has changed from `nvim-opposites` to `swap.nvim`.
-> - The plugin module name has changed from `opposites` to `swap`.
->
-> More information and older notes can be found in the
-> [Breaking Changes](#️-breaking-changes) section.
+Notes to breaking changes can be found in the ‼️
+[Breaking Changes](#️-breaking-changes) section.
 
 **Table of Contents**:
 
@@ -518,7 +516,8 @@ If you want to not ignore overlapping matches, set the option
 
 ## Todo
 
-- [ ] Limit and check the user configuration.
+- [ ] Add some tests.
+- [x] Limit and check the user configuration.
 - [x] Change the plugin name to `swap.nvim`.
 - [x] Switch todo states.
 - [x] Support word chains like `{ 'foo', 'bar', 'baz' }`.
