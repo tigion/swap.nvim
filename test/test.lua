@@ -1,3 +1,7 @@
+-- Adds the `lua` directory to the package path to find the
+-- plugin modules from the root directory of the project.
+package.path = './lua/?.lua;' .. './lua/?/init.lua;' .. package.path
+
 local M = {}
 
 ---@class testCaseValue
@@ -46,7 +50,7 @@ local M = {}
 ---@param received any
 ---@param input table
 ---@return string
-function M.get_result_string(test_case_id, variant_id, result, expected, received, input)
+local function get_result_string(test_case_id, variant_id, result, expected, received, input)
   local id = test_case_id .. '.' .. variant_id
   local icon = result == true and '✅' or '❌'
   local str = '- ' .. id .. ': ' .. icon .. ' ' .. (result == true and 'passed' or 'failed') .. '\n'
@@ -67,7 +71,7 @@ end
 ---@param test_cases testCases
 ---@param opts? table
 ---@return boolean, testSuiteStats
-function M.run(title, test_cases, opts)
+local function run_test_suite(title, test_cases, opts)
   opts = opts or {}
 
   ---@type testSuiteStats
@@ -121,7 +125,7 @@ function M.run(title, test_cases, opts)
 
       -- Add the test case variant result to the result string.
       if opts.verbose == true or result == false then
-        result_str = result_str .. M.get_result_string(test_case.id, idx, result, value.expected, received, value.input)
+        result_str = result_str .. get_result_string(test_case.id, idx, result, value.expected, received, value.input)
       end
     end
     -- Updates the test cases statistics.
@@ -142,7 +146,7 @@ end
 ---Adds the statistics of the test suite to the global statistics.
 ---@param stats testStats
 ---@param test_suite_stats testSuiteStats
-function M.append_stats(stats, test_suite_stats)
+local function append_stats(stats, test_suite_stats)
   stats.test_cases.count = stats.test_cases.count + test_suite_stats.test_cases.count
   stats.test_cases.passed = stats.test_cases.passed + test_suite_stats.test_cases.passed
   stats.test_cases.failed = stats.test_cases.failed + test_suite_stats.test_cases.failed
@@ -165,7 +169,7 @@ end
 
 ---Prints the global test statistics.
 ---@param stats testStats|testSuiteStats
-function M.show_test_suite_stats(stats)
+local function show_test_suite_stats(stats)
   local str = ''
   local line_char = '-'
   if stats.test_suites ~= nil then
@@ -197,6 +201,68 @@ function M.show_test_suite_stats(stats)
   print(str)
   print_line(str, line_char)
   print('\n')
+end
+
+---Runs the given test suits and exits with an exit code.
+-- - `0` if all tests passed
+-- - `1` if any test failed
+---@param test_suite_names table
+---@param opts? table
+function M.run(test_suite_names, opts)
+  opts = opts or {}
+
+  if #test_suite_names < 1 then
+    print('\nNo test suites to run!')
+    return
+  end
+
+  local test_suites = {}
+  for _, test_suite_name in ipairs(test_suite_names) do
+    table.insert(test_suites, require('test.' .. test_suite_name))
+  end
+
+  ---The global test statistics.
+  ---@type testStats
+  local stats = {
+    test_suites = {
+      count = #test_suites,
+      passed = 0,
+      failed = 0,
+    },
+    test_cases = {
+      count = 0,
+      passed = 0,
+      failed = 0,
+    },
+    variants = 0,
+    passed = 0,
+    failed = 0,
+  }
+
+  print('\nRunning tests...\n\n')
+
+  for _, test_suite in ipairs(test_suites) do
+    local result, test_suite_stats = run_test_suite(test_suite.name, test_suite.test_cases, opts)
+    if opts.verbose == true or test_suite_stats.failed > 0 then show_test_suite_stats(test_suite_stats) end
+    if result == false then
+      stats.test_suites.failed = stats.test_suites.failed + 1
+    else
+      stats.test_suites.passed = stats.test_suites.passed + 1
+    end
+    append_stats(stats, test_suite_stats)
+  end
+
+  -- Shows the global test statistics.
+  show_test_suite_stats(stats)
+
+  -- Shows the final test result and exits with exit code.
+  if stats.failed == 0 then
+    print('✅ Tests passed!')
+    os.exit(0)
+  else
+    print('❌ Tests failed!')
+    os.exit(1)
+  end
 end
 
 return M
