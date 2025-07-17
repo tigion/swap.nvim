@@ -15,24 +15,6 @@ local M = {}
 -- This only works after the plugin is loaded/required.
 -- _G.Swap = M
 
----@class swap.Cursor
----@field row integer
----@field col integer
-
----@class swap.ResultOpts
----@field cursor_outside? boolean The cursor can be outside the new string.
----@field overlapping_match_idx? integer The index of overlapping matches for the same string.
-
----@class swap.Result
----@field str string The found string.
----@field new_str string The new string.
----@field start_idx integer The start index of the string in the line.
----@field cursor swap.Cursor The cursor position.
----@field module string The module name.
----@field opts? swap.ResultOpts The options for the result.
-
----@alias swap.Results swap.Result[]
-
 ---@param opts? swap.Config
 function M.setup(opts)
   -- Checks the supported neovim version.
