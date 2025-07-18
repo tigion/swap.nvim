@@ -21,7 +21,7 @@ M.test_cases = {
           'if start_idx == nil or start_idx > col_idx then break end',
           --    ^                   ^ |
           'art_id',
-          { col = 27, row = 1 },
+          { row = 1, col = 27 },
         },
         expected = { 26 },
       },
@@ -32,7 +32,7 @@ M.test_cases = {
           'if start_idx == nil or start_idx > col_idx then break end',
           --    ^     |             ^
           'art_id',
-          { col = 11, row = 1 },
+          { row = 1, col = 11 },
         },
         expected = {},
       },
@@ -43,7 +43,7 @@ M.test_cases = {
           'Lorem ipsum foofoofoo dolor sit amet, consectetur foofoofoo elit.',
           --           ^  ^                                  ^  ^|
           'foofoo',
-          { col = 54, row = 1 },
+          { row = 1, col = 54 },
           { ignore_overlapping_matches = true },
         },
         expected = { 51 },
@@ -55,7 +55,7 @@ M.test_cases = {
           'Lorem ipsum foofoofoo dolor sit amet, consectetur foofoofoo elit.',
           --           ^  ^                                  ^  ^|
           'foofoo',
-          { col = 54, row = 1 },
+          { row = 1, col = 54 },
           { ignore_overlapping_matches = false },
         },
         expected = { 51, 54 },
@@ -74,7 +74,7 @@ M.test_cases = {
             str = 'Vim',
             new_str = 'Neovim',
             start_idx = 15,
-            cursor = { col = 16, row = 1 },
+            cursor = { row = 1, col = 16 },
             module = 'opposites',
           },
         },
@@ -87,7 +87,7 @@ M.test_cases = {
             str = 'false',
             new_str = 'true',
             start_idx = 11,
-            cursor = { col = 12, row = 1 },
+            cursor = { row = 1, col = 12 },
             module = 'opposites',
           },
         },

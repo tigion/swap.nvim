@@ -16,13 +16,13 @@ M.test_cases = {
     values = {
       -- Cursor in word `disable` found `enable`.
       {
-        input = { 'disable', { col = 0, row = 1 }, true },
+        input = { 'disable', { row = 1, col = 0 }, true },
         expected = {
           {
             str = 'disable',
             new_str = 'enable',
             start_idx = 1,
-            cursor = { col = 0, row = 1 },
+            cursor = { row = 1, col = 0 },
             module = 'opposites',
             opts = {},
           },
@@ -30,23 +30,23 @@ M.test_cases = {
       },
       -- Cursor not in word `disable` found nothing.
       {
-        input = { 'disable', { col = 8, row = 1 }, true },
+        input = { 'disable', { row = 1, col = 8 }, true },
         expected = {},
       },
       -- Word `unknown` not in config found nothing.
       {
-        input = { 'unknown', { col = 0, row = 1 }, true },
+        input = { 'unknown', { row = 1, col = 0 }, true },
         expected = {},
       },
       -- Cursor on `<` in word `<=` found `>` and `>=`.
       {
-        input = { '<=', { col = 0, row = 1 }, true },
+        input = { '<=', { row = 1, col = 0 }, true },
         expected = {
           {
             str = '<',
             new_str = '>',
             start_idx = 1,
-            cursor = { col = 0, row = 1 },
+            cursor = { row = 1, col = 0 },
             module = 'opposites',
             opts = {},
           },
@@ -54,7 +54,7 @@ M.test_cases = {
             str = '<=',
             new_str = '>=',
             start_idx = 1,
-            cursor = { col = 0, row = 1 },
+            cursor = { row = 1, col = 0 },
             module = 'opposites',
             opts = {},
           },
