@@ -70,7 +70,8 @@ local cases = {
 ---@return integer? # The start index of the word or nil.
 ---@return string? # The word or nil if not found.
 local function find_word_in_line(line, col)
-  local pattern = '[a-zA-Z0-9_-]+'
+  local pattern = '[%w_%-]+'
+  -- local pattern = '[a-zA-Z0-9_-]+'
   local start_idx, end_idx
 
   -- Finds the pattern matching word in the line.
