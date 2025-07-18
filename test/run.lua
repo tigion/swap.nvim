@@ -17,6 +17,7 @@ local test_suite_names = {
   'validation_test',
   'opposites_test',
   'todos_test',
+  'cases_test',
 }
 
 -- Runs the test suits.
