@@ -81,6 +81,24 @@ return {
 }
 ```
 
+### vim.pack (nvim 0.12+)
+
+With the future Neovim 0.12, there will be a built-in `vim.pack` plugin manager.
+It is still under development.
+
+```lua
+vim.pack.add({
+  'https://github.com/tigion/swap.nvim',
+  -- { src = 'https://github.com/tigion/swap.nvim', version = 'main' },
+})
+
+-- Use `setup()` for your own user configuration in the `{}` table.
+require('swap').setup({})
+
+-- Add a key mapping to switch something.
+vim.keymap.set('n', '<Leader>i', require('swap').switch, { desc = 'Swap word' })
+```
+
 &nbsp;
 
 ## Usage
