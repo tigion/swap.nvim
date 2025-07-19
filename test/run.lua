@@ -8,6 +8,16 @@ local options = {
   verbose = false,
 }
 
+-- Sets up needed plugin options for the test suits.
+local swap = require('swap')
+swap.setup({
+  chains = {
+    words = {
+      { 'foo', 'bar', 'baz', 'qux' },
+    },
+  },
+})
+
 -- The names of the test-suite description files, without
 -- the extension `.lua`, which are to be tested.
 local test_suite_names = {
@@ -18,6 +28,7 @@ local test_suite_names = {
   'opposites_test',
   'todos_test',
   'cases_test',
+  'chains_test',
 }
 
 -- Runs the test suits.
