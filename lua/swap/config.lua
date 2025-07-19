@@ -68,8 +68,10 @@ function M.setup(opts)
 
   -- Clears the default opposite words if the user doesn't want to use them.
   local new_defaults = vim.deepcopy(defaults)
-  if opts.opposites.use_default_words == false then new_defaults.opposites.words = {} end
-  if opts.opposites.use_default_words_by_ft == false then new_defaults.opposites.words_by_ft = {} end
+  if opts.opposites then
+    if opts.opposites.use_default_words == false then new_defaults.opposites.words = {} end
+    if opts.opposites.use_default_words_by_ft == false then new_defaults.opposites.words_by_ft = {} end
+  end
 
   -- Merges the user config with the default config.
   M.options = vim.tbl_deep_extend('force', new_defaults, opts or {})
