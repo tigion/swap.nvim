@@ -148,9 +148,12 @@ local function switch_to_next_or_given_case_type(word, case_id)
   -- Exits if word is nil or empty.
   if word == nil or word == '' then return false end
 
+  -- Extracts the prefix, inner word and suffix from the word.
+  local prefix, inner_word, suffix = word:match('^(_*)(.*[^%_]+)(_*)')
+
   -- Parses given word to supported case type.
   -- Exits if word is not supported or has less than 2 parts.
-  local result = parse_allowed_case_types(word)
+  local result = parse_allowed_case_types(inner_word)
   if result == false or #result.parts < 2 then return false end
 
   -- Gets the next case type or use the given case type.
@@ -163,7 +166,7 @@ local function switch_to_next_or_given_case_type(word, case_id)
   -- Returns converted parts based on the new case type.
   if cases[new_case_type_id] then
     local converter = cases[new_case_type_id].converter
-    if type(converter) == 'function' then return converter(result.parts) end
+    if type(converter) == 'function' then return prefix .. converter(result.parts) .. suffix end
   end
 
   return false

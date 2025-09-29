@@ -188,12 +188,63 @@ M.test_cases = {
         --                    |^
       },
 
-      -- Underscores and dashes are only allowed between the word parts. -- TODO: Is this limitation necessary?
-      { input = { '_foo_bar', { row = 1, col = 2 }, true, 'camel' } },
+      -- Dashes are only allowed between the word parts. -- TODO: Is this limitation necessary?
       { input = { '-foo-bar', { row = 1, col = 2 }, true, 'camel' } },
-      { input = { 'foo_bar_', { row = 1, col = 2 }, true, 'camel' } },
+      { input = { 'foo_bar--', { row = 1, col = 2 }, true, 'camel' } },
     },
     expected = {},
+  },
+  -- Tests the switch of underscore prefixed and/or suffixed words to the next case type.
+  {
+    id = 'tc05',
+    name = 'get_results()',
+    func = swap_cases.get_results,
+    values = {
+      -- Should find and switch to next case type SCREAMING_SNAKE_CASE.
+      {
+        input = { '_foo_bar', { row = 1, col = 0 }, true },
+        expected = {
+          { str = '_foo_bar', new_str = '_FOO_BAR', start_idx = 1, cursor = { row = 1, col = 0 }, module = 'cases' },
+        },
+      },
+      {
+        input = { '__foo_bar', { row = 1, col = 0 }, true },
+        expected = {
+          { str = '__foo_bar', new_str = '__FOO_BAR', start_idx = 1, cursor = { row = 1, col = 0 }, module = 'cases' },
+        },
+      },
+      {
+        input = { 'foo_bar_', { row = 1, col = 0 }, true },
+        expected = {
+          { str = 'foo_bar_', new_str = 'FOO_BAR_', start_idx = 1, cursor = { row = 1, col = 0 }, module = 'cases' },
+        },
+      },
+      {
+        input = { 'foo_bar__', { row = 1, col = 0 }, true },
+        expected = {
+          { str = 'foo_bar__', new_str = 'FOO_BAR__', start_idx = 1, cursor = { row = 1, col = 0 }, module = 'cases' },
+        },
+      },
+      -- Should find and switch to next case type snake_case.
+      {
+        input = { '_FooBar_', { row = 1, col = 0 }, true },
+        expected = {
+          { str = '_FooBar_', new_str = '_foo_bar_', start_idx = 1, cursor = { row = 1, col = 0 }, module = 'cases' },
+        },
+      },
+      {
+        input = { '__FooBar__', { row = 1, col = 0 }, true },
+        expected = {
+          {
+            str = '__FooBar__',
+            new_str = '__foo_bar__',
+            start_idx = 1,
+            cursor = { row = 1, col = 0 },
+            module = 'cases',
+          },
+        },
+      },
+    },
   },
 }
 

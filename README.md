@@ -534,8 +534,8 @@ If you want to not ignore overlapping matches, set the option
 
 ## Todo
 
-- [ ] Cases: Add support for underscore prefixes and suffixes like `_foo`, `__foo_bar__` or `__fooBar`.
-- [ ] Add some tests.
+- [x] Cases: Add support for underscore prefixes and suffixes like `_foo`, `__foo_bar__` or `__fooBar`.
+- [x] Add some tests.
 - [x] Limit and check the user configuration.
 - [x] Change the plugin name to `swap.nvim`.
 - [x] Switch todo states.
