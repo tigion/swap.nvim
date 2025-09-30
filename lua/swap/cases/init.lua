@@ -149,6 +149,7 @@ local function switch_to_next_or_given_case_type(word, case_id)
   if word == nil or word == '' then return false end
 
   -- Extracts the prefix, inner word and suffix from the word.
+  -- Allowed prefix/suffix chars are one or more underscores `_`.
   local prefix, inner_word, suffix = word:match('^(_*)(.*[^%_]+)(_*)')
 
   -- Parses given word to supported case type.

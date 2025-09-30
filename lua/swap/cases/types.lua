@@ -6,13 +6,13 @@
 ---@field id swap.ConfigCasesId
 ---@field name string
 ---@field parser fun(word: string): swap.CasesResult|boolean
----@field converter fun(parts: string[], scream?: boolean): string
+---@field converter fun(parts: string[]): string
 ---@field screaming? swap.CasesSource
 
 ---@class swap.CasesType
 ---@field name string
 ---@field parser fun(word: string): swap.CasesResult|boolean
----@field converter fun(parts: string[], scream?: boolean): string
+---@field converter fun(parts: string[]): string
 
 ---@class swap.CasesResult
 ---@field parts string[]

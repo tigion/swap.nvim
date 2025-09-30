@@ -300,11 +300,12 @@ opts = {
 
 #### Limits
 
-- Identifies only words with alphanumeric characters, underscores and dashes
+- Identifies only words with alphanumeric characters, underscores and hyphens
   (`a-zA-Z0-9_-`).
 - Word parts must start with a letter.
 - Numbers are only allowed at the end of the word parts.
-- Underscores and dashes are only allowed between the word parts.
+- Underscores and hyphens are only allowed between the word parts.
+- Underscores are allowed as prefix and/or suffix.
 - Words must be at least 2 parts long.
 - No mixed case types.
 - No support of abbreviations in capital letters for camelCase and PascalCase
@@ -313,7 +314,8 @@ opts = {
 Examples:
 
 - ✅ `foo_bar`, `foo_bar1`, `foo_bar_baz`
-- ❌ `foo`, `foo_1bar`, `_foo_bar`, `foo_bar_`, `foo_bar-baz`, `foo_bar_Baz`
+- ✅ `_foo_bar`, `__foo_bar`, `__foo_bar__`
+- ❌ `foo`, `foo_1bar`, `foo_bar-baz`, `foo_bar_Baz`
 
 &nbsp;
 

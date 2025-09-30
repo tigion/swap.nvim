@@ -171,7 +171,7 @@ M.test_cases = {
       { input = { 'foo_1bar', { row = 1, col = 2 }, true, 'camel' } },
       -- No words with unsupported chars (allowed: `a-zA-Z0-9_-`).
       { input = { 'foo#_bar', { row = 1, col = 2 }, true, 'camel' } },
-      -- No mixed underscores and dashes.
+      -- No mixed underscores and hyphens.
       { input = { 'foo_bar-baz', { row = 1, col = 2 }, true, 'camel' } },
       -- No support of abbreviations in capital letters.
       { input = { 'foo_BAR', { row = 1, col = 2 }, true, 'camel' } },
@@ -180,6 +180,8 @@ M.test_cases = {
       -- No unsupported case types.
       { input = { 'foo_baR', { row = 1, col = 2 }, true, 'camel' } },
       { input = { 'fooBarBaz-qux', { row = 1, col = 2 }, true, 'camel' } },
+      { input = { 'foo__bar', { row = 1, col = 2 }, true, 'camel' } },
+      { input = { 'foo--bar', { row = 1, col = 2 }, true, 'camel' } },
 
       -- No case type under the cursor.
       {
@@ -188,7 +190,7 @@ M.test_cases = {
         --                    |^
       },
 
-      -- Dashes are only allowed between the word parts. -- TODO: Is this limitation necessary?
+      -- Hyphens are only allowed between the word parts. -- TODO: Is this limitation necessary?
       { input = { '-foo-bar', { row = 1, col = 2 }, true, 'camel' } },
       { input = { 'foo_bar--', { row = 1, col = 2 }, true, 'camel' } },
     },
