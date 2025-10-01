@@ -1,5 +1,6 @@
 local config = require('swap.config')
 local notify = require('swap.notify')
+local util = require('swap.util')
 
 ---@class swap.cases
 M = {}
@@ -87,29 +88,32 @@ local function find_word_in_line(line, col)
   return nil
 end
 
----Gets the allowed case types filtered by the user config.
----@return swap.ConfigCases
-local function get_allowed_case_types()
+---Gets the allowed case type ids filtered by the user config.
+---@return swap.ConfigCasesTypes
+local function get_allowed_case_type_ids()
   -- Gets the case types from the user config.
   local user_cases = config.options.cases.types
   if type(user_cases) ~= 'table' or #user_cases == 0 then return {} end
 
-  -- Filters the case types.
-  local allowed_cases = {}
+  -- Filters the case type ids.
+  local allowed_case_ids = {}
   for _, id in ipairs(user_cases) do
-    if cases[id] then allowed_cases[id] = cases[id] end
+    if cases[id] then table.insert(allowed_case_ids, id) end
   end
 
-  return allowed_cases
+  return allowed_case_ids
 end
 
 ---Parses the given word with the allowed case types.
 ---@param word string The word to parse.
 ---@return swap.CasesResult|boolean # The parsed result or false.
 local function parse_allowed_case_types(word)
-  for _, case_type in pairs(get_allowed_case_types()) do
-    local result = case_type.parser(word)
-    if result then return result end
+  for _, case_type_id in ipairs(get_allowed_case_type_ids()) do
+    local case_type = cases[case_type_id]
+    if case_type then
+      local result = case_type.parser(word)
+      if result then return result end
+    end
   end
 
   return false
@@ -120,15 +124,17 @@ end
 ---@return string?
 local function get_next_case_type_id(case_type_id)
   -- Gets the allowed case types and exits with nil if there are none.
-  local allowed_case_types = get_allowed_case_types()
-  if vim.tbl_count(allowed_case_types) == 0 then return nil end
+  local allowed_case_type_ids = get_allowed_case_type_ids()
+  if #allowed_case_type_ids == 0 then return nil end
+
+  -- Finds the index of the given case type id.
+  local index = util.table.find(allowed_case_type_ids, case_type_id)
+  if index == nil then return nil end
 
   -- Gets the next case type id.
-  local new_case_type_id = next(allowed_case_types, case_type_id)
-  -- Gets the first case type id if the next one is nil.
-  if new_case_type_id == nil then new_case_type_id = next(allowed_case_types) end
+  local new_case_type_idx = index < #allowed_case_type_ids and index + 1 or 1
 
-  return new_case_type_id
+  return allowed_case_type_ids[new_case_type_idx]
 end
 
 ---Switches the given word to its next case type or the given case type.
