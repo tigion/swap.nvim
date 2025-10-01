@@ -9,17 +9,41 @@ local M = {
   -- Parses PascalCase.
   --
   -- Each part:
-  -- - Starts with an uppercase letter (%u)
-  -- - Followed by one or more lowercase letters (%l+)
-  -- - Optionally followed by digits (%d*)
+  -- - Default case:
+  --   - Starts with one uppercase letter (%u)
+  --   - Followed by one or more lowercase letters or digits ([%l%d]+)
+  -- - Special case for acronyms:
+  --   - Has two or more uppercase letters (%u%u+)
+  --   - Optionally followed by one or more digits (%d*)
+  -- - Special case for last part:
+  --   - Has only one uppercase letter (%u)
   --
   parser = function(word)
     local parts, initial_idx = {}, 1
     while initial_idx <= #word do
-      local start_idx, end_idx = word:find('^%u%l+%d*', initial_idx)
-      if not start_idx then return false end
-      table.insert(parts, word:sub(start_idx, end_idx))
-      initial_idx = end_idx + 1
+      -- Handles default case.
+      local part_start, part_end = word:find('^%u[%l%d]+', initial_idx)
+      if part_start then
+        -- Adds the found part to the parts list.
+        parts[#parts + 1] = word:sub(part_start, part_end)
+        initial_idx = part_end + 1
+      else
+        -- Handles special case for acronyms and last part.
+        local acronym_start, acronym_end = word:find('^%u+', initial_idx)
+        if acronym_start then
+          -- If the acronym is not only one letter and not at the end of the word,
+          -- the last character of the current part is the beginning of the next part.
+          if acronym_end ~= acronym_start and acronym_end ~= #word then acronym_end = acronym_end - 1 end
+          -- Handles an acronym followed by digits.
+          local start_idx, end_idx = word:find('^%u%u+%d+', initial_idx)
+          if start_idx then acronym_end = end_idx end
+          -- Adds the found part to the parts list.
+          parts[#parts + 1] = word:sub(acronym_start, acronym_end)
+          initial_idx = acronym_end + 1
+        else
+          return false
+        end
+      end
     end
     return { parts = parts, case_type_id = id }
   end,

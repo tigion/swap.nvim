@@ -248,6 +248,88 @@ M.test_cases = {
       },
     },
   },
+  -- Tests for acronyms.
+  {
+    id = 'tc06',
+    name = 'get_results()',
+    func = swap_cases.get_results,
+    values = {
+      -- Should find camel case and switch to case type snake_case.
+      {
+        input = { 'fooBAR', { row = 1, col = 0 }, true, 'snake' },
+        expected = {
+          { str = 'fooBAR', new_str = 'foo_bar', start_idx = 1, cursor = { row = 1, col = 0 }, module = 'cases' },
+        },
+      },
+      {
+        input = { 'fooBAR11', { row = 1, col = 0 }, true, 'snake' },
+        expected = {
+          { str = 'fooBAR11', new_str = 'foo_bar11', start_idx = 1, cursor = { row = 1, col = 0 }, module = 'cases' },
+        },
+      },
+      {
+        input = { 'fooBARBaz', { row = 1, col = 0 }, true, 'snake' },
+        expected = {
+          {
+            str = 'fooBARBaz',
+            new_str = 'foo_bar_baz',
+            start_idx = 1,
+            cursor = { row = 1, col = 0 },
+            module = 'cases',
+          },
+        },
+      },
+      {
+        input = { 'fooBAR11Baz', { row = 1, col = 0 }, true, 'snake' },
+        expected = {
+          {
+            str = 'fooBAR11Baz',
+            new_str = 'foo_bar11_baz',
+            start_idx = 1,
+            cursor = { row = 1, col = 0 },
+            module = 'cases',
+          },
+        },
+      },
+      -- Should find pascal case and switch to case type snake_case.
+      {
+        input = { 'FooBAR', { row = 1, col = 0 }, true, 'snake' },
+        expected = {
+          { str = 'FooBAR', new_str = 'foo_bar', start_idx = 1, cursor = { row = 1, col = 0 }, module = 'cases' },
+        },
+      },
+      {
+        input = { 'FooBAR11', { row = 1, col = 0 }, true, 'snake' },
+        expected = {
+          { str = 'FooBAR11', new_str = 'foo_bar11', start_idx = 1, cursor = { row = 1, col = 0 }, module = 'cases' },
+        },
+      },
+      {
+        input = { 'FooBARBaz', { row = 1, col = 0 }, true, 'snake' },
+        expected = {
+          {
+            str = 'FooBARBaz',
+            new_str = 'foo_bar_baz',
+            start_idx = 1,
+            cursor = { row = 1, col = 0 },
+            module = 'cases',
+          },
+        },
+      },
+      {
+        input = { 'FooBAR11Baz', { row = 1, col = 0 }, true, 'snake' },
+        expected = {
+          {
+            str = 'FooBAR11Baz',
+            new_str = 'foo_bar11_baz',
+            start_idx = 1,
+            cursor = { row = 1, col = 0 },
+            module = 'cases',
+          },
+        },
+      },
+    },
+  },
 }
 
 return M
