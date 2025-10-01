@@ -48,21 +48,6 @@ local M = {
     return { parts = parts, case_type_id = id }
   end,
 
-  -- NOTE: Alternative implementation of the parser with `match()` in `while`-loop.
-  --       Remove later, if it is not needed anymore.
-  --
-  -- parser = function(word)
-  --   local parts = {}
-  --   local part, tail = nil, word
-  --   while tail ~= nil and tail ~= '' do
-  --     part, tail = tail:match('^(%u%l*%d*)(.*)')
-  --     if part == nil then return false end
-  --     table.insert(parts, part)
-  --   end
-  --   if #parts == 0 then return false end
-  --   return { parts = parts, case_type_id = id }
-  -- end,
-
   -- Converts to PascalCase.
   converter = function(parts)
     parts = parts or {}

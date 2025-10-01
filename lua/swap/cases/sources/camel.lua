@@ -57,21 +57,6 @@ local M = {
     return { parts = parts, case_type_id = id }
   end,
 
-  -- NOTE: Alternative implementation of the parser with `match()` in `while`-loop.
-  --       Remove later, if it is not needed anymore.
-  --
-  -- parser = function(word)
-  --   local part, tail = word:match('^(%l+%d*)(.+)')
-  --   if not part then return false end
-  --   local parts = { part }
-  --   while tail and tail ~= '' do
-  --     part, tail = tail:match('^(%u%l+%d*)(.*)')
-  --     if not part then return false end
-  --     table.insert(parts, part)
-  --   end
-  --   return { parts = parts, case_type_id = id }
-  -- end,
-
   -- Converts to camelCase.
   converter = function(parts)
     parts = parts or {}
