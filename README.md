@@ -252,7 +252,7 @@ Rules:
 
 > [!WARNING]
 > This feature is experimental and work in progress.
-> The word identification is very limited (see [Limits](#limits)).
+> The word identification is limited (see [Limits](#limits)).
 
 Call `require('swap').cases.switch()` to switch to the next case type of the
 word under the cursor.
@@ -303,13 +303,15 @@ opts = {
 - Identifies only words with alphanumeric characters, underscores and hyphens
   (`a-zA-Z0-9_-`).
 - Word parts must start with a letter.
-- Numbers are only allowed at the end of the word parts.
+- Numbers are only allowed within the word parts and not at the beginning.
 - Underscores and hyphens are only allowed between the word parts.
 - Underscores are allowed as prefix and/or suffix.
 - Words must be at least 2 parts long.
 - No mixed case types.
-- No support of abbreviations in capital letters for camelCase and PascalCase
-  (e.g. ✅ `fooJson`, ❌ `fooJSON`, ✅ `userId`, ❌ `userID`).
+- Limited support of abbreviations in capital letters for camelCase and PascalCase,
+  but it's only one-way
+  (e.g. `fooJSON` -> `foo_json` -> `fooJson`, `HTTPRequest` -> `http_request` -> `HttpRequest`).
+- Some inaccurate edge cases (e.g. `a_b_c` -> `aBC` -> `a_bc`).
 
 Examples:
 
