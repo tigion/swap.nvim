@@ -48,7 +48,7 @@ M.test_cases = {
           { str = 'foo_bar', new_str = 'fooBar', start_idx = 1, cursor = { row = 1, col = 0 }, module = 'cases' },
         },
       },
-      -- Sould find and switch to PascalCase.
+      -- Should find and switch to PascalCase.
       {
         input = { 'foo_bar', { row = 1, col = 0 }, true, 'pascal' },
         expected = {
@@ -202,40 +202,40 @@ M.test_cases = {
     name = 'get_results()',
     func = swap_cases.get_results,
     values = {
-      -- Should find and switch to next case type SCREAMING_SNAKE_CASE.
+      -- Should find and switch to case type SCREAMING_SNAKE_CASE.
       {
-        input = { '_foo_bar', { row = 1, col = 0 }, true },
+        input = { '_foo_bar', { row = 1, col = 0 }, true, 'screaming_snake' },
         expected = {
           { str = '_foo_bar', new_str = '_FOO_BAR', start_idx = 1, cursor = { row = 1, col = 0 }, module = 'cases' },
         },
       },
       {
-        input = { '__foo_bar', { row = 1, col = 0 }, true },
+        input = { '__foo_bar', { row = 1, col = 0 }, true, 'screaming_snake' },
         expected = {
           { str = '__foo_bar', new_str = '__FOO_BAR', start_idx = 1, cursor = { row = 1, col = 0 }, module = 'cases' },
         },
       },
       {
-        input = { 'foo_bar_', { row = 1, col = 0 }, true },
+        input = { 'foo_bar_', { row = 1, col = 0 }, true, 'screaming_snake' },
         expected = {
           { str = 'foo_bar_', new_str = 'FOO_BAR_', start_idx = 1, cursor = { row = 1, col = 0 }, module = 'cases' },
         },
       },
       {
-        input = { 'foo_bar__', { row = 1, col = 0 }, true },
+        input = { 'foo_bar__', { row = 1, col = 0 }, true, 'screaming_snake' },
         expected = {
           { str = 'foo_bar__', new_str = 'FOO_BAR__', start_idx = 1, cursor = { row = 1, col = 0 }, module = 'cases' },
         },
       },
-      -- Should find and switch to next case type snake_case.
+      -- Should find and switch to case type snake_case.
       {
-        input = { '_FooBar_', { row = 1, col = 0 }, true },
+        input = { '_FooBar_', { row = 1, col = 0 }, true, 'snake' },
         expected = {
           { str = '_FooBar_', new_str = '_foo_bar_', start_idx = 1, cursor = { row = 1, col = 0 }, module = 'cases' },
         },
       },
       {
-        input = { '__FooBar__', { row = 1, col = 0 }, true },
+        input = { '__FooBar__', { row = 1, col = 0 }, true, 'snake' },
         expected = {
           {
             str = '__FooBar__',
@@ -302,6 +302,24 @@ M.test_cases = {
         input = { 'FooBAR11', { row = 1, col = 0 }, true, 'snake' },
         expected = {
           { str = 'FooBAR11', new_str = 'foo_bar11', start_idx = 1, cursor = { row = 1, col = 0 }, module = 'cases' },
+        },
+      },
+      {
+        input = { 'FooBarB', { row = 1, col = 0 }, true, 'snake' },
+        expected = {
+          { str = 'FooBarB', new_str = 'foo_bar_b', start_idx = 1, cursor = { row = 1, col = 0 }, module = 'cases' },
+        },
+      },
+      {
+        input = { 'FooBarB11', { row = 1, col = 0 }, true, 'snake' },
+        expected = {
+          {
+            str = 'FooBarB11',
+            new_str = 'foo_bar_b11',
+            start_idx = 1,
+            cursor = { row = 1, col = 0 },
+            module = 'cases',
+          },
         },
       },
       {

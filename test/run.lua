@@ -16,6 +16,16 @@ swap.setup({
       { 'foo', 'bar', 'baz', 'qux' },
     },
   },
+  cases = {
+    types = {
+      'snake',
+      'screaming_snake',
+      'kebab',
+      'screaming_kebab',
+      'camel',
+      'pascal',
+    },
+  },
 })
 
 -- The names of the test-suite description files, without
