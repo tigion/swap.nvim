@@ -10,6 +10,7 @@ function M.has_uppercase(word)
     if c:lower() ~= c:upper() and c == c:upper() then return true end
   end
   return false
+  -- return string.find(word, '%u') ~= nil
 end
 
 ---Returns true if at least one word in the array of words has uppercase letters.
@@ -38,11 +39,7 @@ function M.get_case_sensitive_mask(word)
     return true
   end
   -- Mixed case.
-  local mask = ''
-  for i = 1, #word do
-    local c = word:sub(i, i)
-    mask = mask .. (c:lower() == c and 'x' or 'X')
-  end
+  local mask = word:gsub('.', function(c) return c:lower() == c and 'x' or 'X' end)
   return mask
 end
 
@@ -52,18 +49,14 @@ end
 ---@return string # The word with the applied case sensitive mask.
 function M.apply_case_sensitive_mask(word, mask)
   -- Apply upper or lower case.
-  if mask == true then
-    return word:upper()
-  elseif mask == false then
-    return word:lower()
-  end
+  if type(mask) == 'boolean' then return mask and word:upper() or word:lower() end
   -- Apply mixed case.
-  local new_word = ''
+  local new_word_parts = {}
   for i = 1, #word do
     local c = word:sub(i, i)
-    new_word = new_word .. (mask:sub(i, i) == 'X' and c:upper() or c:lower())
+    new_word_parts[i] = (mask:sub(i, i) == 'X' and c:upper() or c:lower())
   end
-  return new_word
+  return table.concat(new_word_parts)
 end
 
 return M
